@@ -1,0 +1,27 @@
+{
+  "name": "sms_signup_bulk",
+  "version": "1.0.0",
+  "description": "A tool to bulk signup users through blink",
+  "main": "signup.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "engines": {
+    "node": "7.7.2"
+  },
+  "keywords": [
+    "blink",
+    "signup",
+    "bulk",
+    "tool"
+  ],
+  "author": "Rafael Pacas",
+  "license": "ISC",
+  "dependencies": {
+    "command-line-args": "^4.0.3",
+    "dotenv": "^4.0.0",
+    "node-fetch": "^1.6.3",
+    "promisify-node": "^0.4.0",
+    "split": "^1.0.0"
+  }
+}

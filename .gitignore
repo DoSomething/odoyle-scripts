@@ -1,0 +1,5 @@
+data/
+log/
+imported/
+.env
+node_modules/
