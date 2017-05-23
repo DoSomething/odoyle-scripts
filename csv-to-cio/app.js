@@ -33,6 +33,7 @@ winston.configure({
       filename: 'logs/unprocessed.log',
       level: 'error',
       colorize: false,
+      json: false,
     })
   ],
   exceptionHandlers: [
@@ -115,7 +116,7 @@ const main = async (stream) => {
       let user = await getNorthstarUser(data[i].id);
       await postToBlink(user);
     } catch (e) {
-      winston.error(`Can't process ${data[i].id}: ${e}`);
+      winston.error(`${data[i].id} | ${e}`);
       continue;
     }
   }
