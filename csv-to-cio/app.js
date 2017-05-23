@@ -7,7 +7,7 @@ require('dotenv').config();
 // ------- Imports -------------------------------------------------------------
 const fs = require('fs');
 const yargs = require('yargs');
-const csv = require('csv-parser')
+const neatCsv = require('neat-csv');
 require('isomorphic-fetch');
 
 // ------- Args parse ----------------------------------------------------------
@@ -22,18 +22,6 @@ const argv = yargs
 
 // ------- App bootstrap -------------------------------------------------------
 
-const processRow = async (row) => {
-  let result;
-  try {
-    result = await getNorthstarUser(row.id);
-  } catch (e) {
-    console.error(`Can't process ${row.id}: ${e}`);
-    return;
-  }
-
-  console.dir(result, { colors: true, showHidden: true });
-}
-
 const getNorthstarUser = async (id) => {
   let result;
   try {
@@ -41,7 +29,7 @@ const getNorthstarUser = async (id) => {
       `${process.env.DS_NORTHSTAR_API_BASEURI}/users/id/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.DS_NORTHSTAR_API_KEY}`
+          'X-DS-REST-API-Key': process.env.DS_NORTHSTAR_API_KEY,
         }
       }
     );
@@ -55,12 +43,59 @@ const getNorthstarUser = async (id) => {
   return result.data;
 }
 
-fs.createReadStream(argv.file)
-  .on('error', (e) => console.error(`Parse error | ${e}`))
-  .pipe(csv({
+const postToBlink = async (user) => {
+  let result;
+  const blinkUser = Object.assign({}, user);
+  // Rename status field, as Northstar hasn't catched up yet
+  if (blinkUser.mobilecommons_status) {
+    blinkUser.mobile_status = blinkUser.mobilecommons_status;
+    delete blinkUser.mobilecommons_status;
+  }
+
+  const body = JSON.stringify(blinkUser);
+  try {
+    const response = await fetch(
+      `${process.env.BLINK_BASE_URI}/events/user-create`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${process.env.BLINK_AUTH}`,
+          'Content-Type': 'application/json',
+        },
+        body,
+      }
+    );
+    result = await response.json();
+  } catch (e) {
+    throw new Error(`Blink error: ${e}`);
+  }
+  if (result.ok !== true) {
+    throw new Error(`Blink response: ${result.message}, payload: ${body}`);
+  }
+
+  console.log(`Processed ${body}`);
+  return result.data;
+}
+
+const main = async (stream) => {
+  const data = await neatCsv(stream, {
     headers: ['id'],
     separator: ',',
-  }))
-  .on('data', processRow);
+  });
+
+  for (let i = data.length - 1; i >= 0; i--) {
+    try {
+      let user = await getNorthstarUser(data[i].id);
+      await postToBlink(user);
+    } catch (e) {
+      console.error(`Can't process ${data[i].id}: ${e}`);
+      continue;
+    }
+  }
+}
+
+const csvFile = fs.createReadStream(argv.file)
+  .on('error', (e) => console.error(`Parse error | ${e}`));
+main(csvFile);
 
 // ------- End -----------------------------------------------------------------
