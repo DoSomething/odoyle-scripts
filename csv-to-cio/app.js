@@ -6,9 +6,10 @@ require('dotenv').config();
 
 // ------- Imports -------------------------------------------------------------
 const fs = require('fs');
-const yargs = require('yargs');
-const neatCsv = require('neat-csv');
 require('isomorphic-fetch');
+const neatCsv = require('neat-csv');
+const winston = require('winston');
+const yargs = require('yargs');
 
 // ------- Args parse ----------------------------------------------------------
 
@@ -19,6 +20,27 @@ const argv = yargs
   .describe('f', 'Load a file')
   .demandOption(['f'])
   .argv;
+
+winston.configure({
+  transports: [
+    new winston.transports.Console({
+      prettyPrint: true,
+      colorize: true,
+      level: 'debug',
+      showLevel: true,
+    }),
+  ],
+  exceptionHandlers: [
+    new winston.transports.Console({
+      prettyPrint: true,
+      colorize: true,
+    }),
+  ],
+});
+
+winston.setLevels(winston.config.syslog.levels);
+winston.addColors(winston.config.syslog.colors);
+
 
 // ------- App bootstrap -------------------------------------------------------
 
@@ -73,7 +95,7 @@ const postToBlink = async (user) => {
     throw new Error(`Blink response: ${result.message}, payload: ${body}`);
   }
 
-  console.log(`Processed ${body}`);
+  winston.info(`Processed ${body}`);
   return result.data;
 }
 
@@ -88,14 +110,14 @@ const main = async (stream) => {
       let user = await getNorthstarUser(data[i].id);
       await postToBlink(user);
     } catch (e) {
-      console.error(`Can't process ${data[i].id}: ${e}`);
+      winston.error(`Can't process ${data[i].id}: ${e}`);
       continue;
     }
   }
 }
 
 const csvFile = fs.createReadStream(argv.file)
-  .on('error', (e) => console.error(`Parse error | ${e}`));
+  .on('error', (e) => winston.error(`Parse error | ${e}`));
 main(csvFile);
 
 // ------- End -----------------------------------------------------------------
