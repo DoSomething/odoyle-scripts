@@ -68,6 +68,8 @@ const getNorthstarUser = async (id) => {
   if (result.error) {
     throw new Error(`Northstar response: ${result.error.message}`);
   }
+
+  winston.info(`Northstar loaded ${id}`);
   return result.data;
 }
 
@@ -101,22 +103,21 @@ const postToBlink = async (user) => {
     throw new Error(`Blink response: ${result.message}, payload: ${body}`);
   }
 
-  winston.info(`Processed ${body}`);
+  winston.info(`Blink processed ${body}`);
   return result.data;
 }
 
 const main = async (stream) => {
   const data = await neatCsv(stream, {
-    headers: ['id'],
     separator: ',',
   });
 
   for (let i = data.length - 1; i >= 0; i--) {
     try {
-      let user = await getNorthstarUser(data[i].id);
-      await postToBlink(user);
+      let user = await getNorthstarUser(data[i].northstar_id);
+      // await postToBlink(user);
     } catch (e) {
-      winston.error(`${data[i].id} | ${e}`);
+      winston.error(`${data[i].northstar_id} | ${e}`);
       continue;
     }
   }
