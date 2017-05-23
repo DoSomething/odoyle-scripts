@@ -29,6 +29,11 @@ winston.configure({
       level: 'debug',
       showLevel: true,
     }),
+    new winston.transports.File({
+      filename: 'log/unprocessed.log',
+      level: 'error',
+      colorize: false,
+    })
   ],
   exceptionHandlers: [
     new winston.transports.Console({
