@@ -1,0 +1,11 @@
+{
+  "name": "csv-to-cio",
+  "version": "1.0.0",
+  "description": "Get data from csv, match by id on Northstar and post to Blink c.io user registration",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sergii Tkachenko",
+  "license": "MIT"
+}
