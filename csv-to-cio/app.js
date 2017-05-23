@@ -7,7 +7,7 @@ require('dotenv').config();
 // ------- Imports -------------------------------------------------------------
 const fs = require('fs');
 const yargs = require('yargs');
-const parse = require('csv-parse');
+const csv = require('csv-parser')
 
 // ------- Args parse ----------------------------------------------------------
 
@@ -21,14 +21,16 @@ const argv = yargs
 
 // ------- App bootstrap -------------------------------------------------------
 
-const processRow = async (err, data) => {
-  console.dir(data, { colors: true, showHidden: true });
+const processRow = async (row) => {
+  console.dir(row.id, { colors: true, showHidden: true });
 }
-
-const parser = parse({}, processRow);
 
 fs.createReadStream(argv.file)
   .on('error', (e) => console.error(`Parse error | ${e}`))
-  .pipe(parser);
+  .pipe(csv({
+    headers: ['id'],
+    separator: ',',
+  }))
+  .on('data', processRow);
 
 // ------- End -----------------------------------------------------------------
