@@ -9,6 +9,7 @@
   "author": "Sergii Tkachenko",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "yargs": "^8.0.1"
   }
 }
