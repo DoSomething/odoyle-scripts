@@ -119,7 +119,7 @@ const main = async (stream) => {
     limiter.removeTokens(1, async () => {
       try {
         let user = await getNorthstarUser(data[i].northstar_id);
-        // await postToBlink(user);
+        await postToBlink(user);
       } catch (e) {
         winston.error(`${data[i].northstar_id} | ${e}`);
       }
