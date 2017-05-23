@@ -30,7 +30,7 @@ winston.configure({
       showLevel: true,
     }),
     new winston.transports.File({
-      filename: 'log/unprocessed.log',
+      filename: 'logs/unprocessed.log',
       level: 'error',
       colorize: false,
     })
