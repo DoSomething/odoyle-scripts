@@ -10,6 +10,7 @@ require('isomorphic-fetch');
 const neatCsv = require('neat-csv');
 const winston = require('winston');
 const yargs = require('yargs');
+const RateLimiter = require('limiter').RateLimiter;
 
 // ------- Args parse ----------------------------------------------------------
 
@@ -46,6 +47,8 @@ winston.configure({
 
 winston.setLevels(winston.config.syslog.levels);
 winston.addColors(winston.config.syslog.colors);
+
+const limiter = new RateLimiter(3, 'second');
 
 
 // ------- App bootstrap -------------------------------------------------------
@@ -113,13 +116,14 @@ const main = async (stream) => {
   });
 
   for (let i = data.length - 1; i >= 0; i--) {
-    try {
-      let user = await getNorthstarUser(data[i].northstar_id);
-      // await postToBlink(user);
-    } catch (e) {
-      winston.error(`${data[i].northstar_id} | ${e}`);
-      continue;
-    }
+    limiter.removeTokens(1, async () => {
+      try {
+        let user = await getNorthstarUser(data[i].northstar_id);
+        // await postToBlink(user);
+      } catch (e) {
+        winston.error(`${data[i].northstar_id} | ${e}`);
+      }
+    });
   }
 }
 
