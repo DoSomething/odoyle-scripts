@@ -84,6 +84,8 @@ const postToBlink = async (user) => {
     blinkUser.mobile_status = blinkUser.mobilecommons_status;
     delete blinkUser.mobilecommons_status;
   }
+  // Used to suppress welcome email
+  blinkUser.source_detail = 'backfill-quasar-pre-launch';
 
   const body = JSON.stringify(blinkUser);
   try {
