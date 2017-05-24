@@ -22,6 +22,8 @@ const argv = yargs
   .demandOption(['f'])
   .argv;
 
+// ------- Logger --------------------------------------------------------------
+
 winston.configure({
   transports: [
     new winston.transports.Console({
@@ -48,10 +50,8 @@ winston.configure({
 winston.setLevels(winston.config.syslog.levels);
 winston.addColors(winston.config.syslog.colors);
 
-const limiter = new RateLimiter(3, 'second');
 
-
-// ------- App bootstrap -------------------------------------------------------
+// ------- Load and transform function -----------------------------------------
 
 const getNorthstarUser = async (id) => {
   let result;
@@ -112,11 +112,14 @@ const postToBlink = async (user) => {
   return result.data;
 }
 
+// ------- Main function --------------------------------------------------------
+
 const main = async (stream) => {
   const data = await neatCsv(stream, {
     separator: ',',
   });
 
+  const limiter = new RateLimiter(3, 'second');
   for (let i = data.length - 1; i >= 0; i--) {
     limiter.removeTokens(1, async () => {
       try {
@@ -131,6 +134,8 @@ const main = async (stream) => {
 
 const csvFile = fs.createReadStream(argv.file)
   .on('error', (e) => winston.error(`Parse error | ${e}`));
+
+// Star main
 main(csvFile);
 
 // ------- End -----------------------------------------------------------------
