@@ -1,0 +1,24 @@
+{
+  "name": "gambit-stuck-submissions-import",
+  "version": "1.0.0",
+  "description": "Submissions get stuck for X reasons in Gambit. This script will attempt to re-POST the submissions through Gambit /chatbot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": ""
+  },
+  "engines": {
+    "node": "7.7.2"
+  },
+  "keywords": [],
+  "author": "Rafael Pacas",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "dotenv": "^4.0.0",
+    "mongodb": "^2.2.27",
+    "node-fetch": "^1.7.0",
+    "underscore": "^1.8.3",
+    "winston": "^2.3.1"
+  }
+}
