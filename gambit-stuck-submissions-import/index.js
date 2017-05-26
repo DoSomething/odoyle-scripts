@@ -12,8 +12,9 @@ function getCampaignsAndKeyword(campaigns) {
   return campaignsMap;
 }
 
-async function getStuckSubmissionsByCampaign(campaigns, db) {
+async function getStuckSubmissionsByCampaign(campaigns) {
   let submissions;
+  const db = await getDB();
   const aggregator = [{
     $match: {
       $and: [
@@ -36,7 +37,7 @@ async function getStuckSubmissionsByCampaign(campaigns, db) {
   try {
     submissions = await db.collection('reportback_submissions').aggregate(aggregator).toArray();
   } catch(error) {
-    logger.debug(error);
+    logger.error(error);
   }
   return submissions;
 }
@@ -47,21 +48,31 @@ async function getStuckSubmissionsByCampaign(campaigns, db) {
 // - the submissions campaign keyword
 //
 // Also, lets post with a delay of 5 seconds per request, just to be extremelly conservative
-function importStuckSubmissions(submissions = []) {
+async function importStuckSubmissions(submissions = []) {
   logger.info(submissions);
 }
 
-function cleanUp(db) {
-  db.close();
+async function cleanUp() {
+  const db = await getDB()
+  return db.close();
 }
 
-config.mongoDB.then((db) => {
-  fetch(config.campaignsEndPoint)
-    .then(res => res.json())
-    .then(res => getCampaignsAndKeyword(res.data))
-    .then(campaigns => getStuckSubmissionsByCampaign(campaigns, db))
-    .then((stuckSubmissions) => importStuckSubmissions(stuckSubmissions))
-    .then(() => cleanUp(db))
-    .catch(err => logger.debug(err));
-})
-.catch(err => logger.debug(err));
+async function getDB() {
+  const db = await config.mongoDB;
+  return db;
+}
+
+async function fetchCurrentCampaigns() {
+  const result = await fetch(config.campaignsEndPoint).then(res => res.json()).then(res => res.data);
+  return result;
+}
+
+async function init() {
+  const campaigns = await fetchCurrentCampaigns();
+  const campaignsWithKeyword = getCampaignsAndKeyword(campaigns);
+  const stuckSubmissions = await getStuckSubmissionsByCampaign(campaignsWithKeyword);
+  await importStuckSubmissions(stuckSubmissions);
+  await cleanUp();
+}
+
+init();
