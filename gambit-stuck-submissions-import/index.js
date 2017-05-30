@@ -1,8 +1,10 @@
 const fetch = require('node-fetch');
-const config = require('./config');
 const logger = require('winston');
 const underscore = require('underscore');
 const Promise = require('bluebird');
+
+const config = require('./config');
+const GambitService = require('./lib/gambit');
 
 function getCampaignsAndKeyword(campaigns) {
   const campaignsMap = {};
@@ -49,6 +51,7 @@ async function getStuckSubmissionsByCampaign(campaigns) {
 //
 // Also, lets post with a delay of 5 seconds per request, just to be extremelly conservative
 async function importStuckSubmissions(submissions = []) {
+  const gambit = new GambitService();
   logger.info(submissions);
 }
 
