@@ -13,7 +13,7 @@ const BatchProcessor = require('./lib/batchProcessor');
 // TODO: use config?
 const testServer = http.createServer(mockserver('./mocks')).listen(9001);
 
-function getCampaignsAndKeyword(campaigns) {
+function getCampaignsAndKeyword(campaigns = []) {
   const campaignsMap = {};
   campaigns.forEach(campaign => {
     campaignsMap[campaign.id] = underscore.first(campaign.keywords).keyword;
@@ -145,17 +145,28 @@ async function getDB() {
 }
 
 async function fetchCurrentCampaigns() {
-  const result = await fetch(config.campaignsEndPoint).then(res => res.json()).then(res => res.data);
-  return result;
+  const response = await fetch(config.campaignsEndPoint).then(res => res.json())
+  const campaigns = response.data;
+
+  if (response.error) {
+    throw new Error(response.error.message);
+  }
+
+  logger.info(`fetched ${JSON.stringify(campaigns.length)} running campaigns.`);
+  return campaigns;
 }
 
 async function init() {
-  const campaigns = await fetchCurrentCampaigns();
-  const campaignsWithKeyword = getCampaignsAndKeyword(campaigns);
-  const stuckSubmissions = await getStuckSubmissionsByCampaign(campaignsWithKeyword);
-  const userIds = getUserIds(stuckSubmissions);
-  const users = await getUsers(userIds);
-  await importStuckSubmissions(stuckSubmissions, users);
+  try {
+    const campaigns = await fetchCurrentCampaigns();
+    const campaignsWithKeyword = getCampaignsAndKeyword(campaigns);
+    const stuckSubmissions = await getStuckSubmissionsByCampaign(campaignsWithKeyword);
+    const userIds = getUserIds(stuckSubmissions);
+    const users = await getUsers(userIds);
+    await importStuckSubmissions(stuckSubmissions, users);
+  } catch (error) {
+    logger.error(error);
+  }
 }
 
 init();
