@@ -19,8 +19,8 @@ Run `NODE_ENV=production npm start`
   - belong to currently running campaigns.
   - **Do not** have a `submitted_at` property.
   - **Have** a `failed_at` property.
-  - It's user **has** a `mobilecommons_id` property.
-  - It's user **has** a `phoenix_id` property.
+  - Its user **has** a `mobilecommons_id` property.
+  - Its user **has** a `phoenix_id` property.
 - If the reportback does not meet the above, it will not be re-posted.
 
 # FAQ
