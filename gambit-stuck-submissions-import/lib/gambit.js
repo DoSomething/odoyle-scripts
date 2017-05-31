@@ -19,7 +19,8 @@ const defaults = {
 class GambitService extends eventEmitter {
   constructor(options = {}, batchProcessor) {
     super();
-    this.options = underscore.extend({}, defaults, options.http || {});
+    this.test = config.environment === 'test';
+    this.options = underscore.extend({}, defaults, options || {});
     this.client = axios.create(this.options);
     this.batchProcessor = batchProcessor ? batchProcessor : new BatchProcessor();
     this.errors = [];
