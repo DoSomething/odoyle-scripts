@@ -3,10 +3,15 @@ const logger = require('winston');
 const underscore = require('underscore');
 const Promise = require('bluebird');
 const queryString = require('querystring');
+const http =  require('http');
+const mockserver = require('mockserver');
 
 const config = require('./config');
 const GambitService = require('./lib/gambit');
 const BatchProcessor = require('./lib/batchProcessor');
+
+// TODO: use config?
+const testServer = http.createServer(mockserver('./mocks')).listen(9001);
 
 function getCampaignsAndKeyword(campaigns) {
   const campaignsMap = {};
@@ -130,6 +135,7 @@ async function importStuckSubmissions(submissionsPerCampaign = [], users = []) {
 
 async function cleanUp() {
   const db = await getDB()
+  testServer.close();
   return db.close();
 }
 
