@@ -34,12 +34,12 @@ class GambitService extends eventEmitter {
       this.emit('done', this.errors, processed);
     });
 
-    this.on('sent', (response) => {
-      logger.info(`Successfully sent request. Status: ${response.status}. Data: ${JSON.stringify(response.data)}`);
+    this.on('sent', (response, request) => {
+      logger.info(`Successfully sent request: ${JSON.stringify(request)} with status: ${response.status}. and response data: ${JSON.stringify(response.data)}`);
     });
 
-    this.on('error', (error) => {
-      logger.error(`Error processing a request: ${error}`);
+    this.on('error', (error, request) => {
+      logger.error(`Error processing a request: ${JSON.stringify(request)} The error was: ${JSON.stringify(error)}`);
     });
   }
   enqueueRequest(request) {
@@ -49,16 +49,17 @@ class GambitService extends eventEmitter {
     });
   }
   send({ method = 'post', endpoint, data = {}, options = {} }) {
+    const request = { method, endpoint, data, options };
     if (method.toLowerCase() === 'post') {
       return this.client.post(endpoint, data, options)
         .then((response) => {
-          this.emit('sent', response);
+          this.emit('sent', response, request);
         })
         .catch((error) => {
-          this.emit('error', error);
+          this.emit('error', error, request);
           this.errors.push({
             error,
-            request: { method, endpoint, data, options }
+            request
           });
         });
     }
