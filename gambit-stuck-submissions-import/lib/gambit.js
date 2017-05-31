@@ -49,13 +49,14 @@ class GambitService extends eventEmitter {
     });
   }
   send({ method = 'post', endpoint, data = {}, options = {} }) {
-    const request = { method, endpoint, data, options };
     if (method.toLowerCase() === 'post') {
       return this.client.post(endpoint, data, options)
         .then((response) => {
+          const request = { method, endpoint, data, options };
           this.emit('sent', response, request);
         })
         .catch((error) => {
+          const request = { method, endpoint, data, options };
           this.emit('error', error, request);
           this.errors.push({
             error,
