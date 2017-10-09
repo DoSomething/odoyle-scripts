@@ -1,18 +1,31 @@
 # Load tester
 Contains load testing scripts. Each script can be implemented independent of the others. They don't share modules or philosophy. This is just a repo for scripts that will load test services.
+
 # Load test scripts
 
-## Broadcasts
+## Broadcasts [script](./load-tests/broadcasts)
 Load testing broadcasts consist on attempting to generate the same traffic we expect from Twilio when publishing a [Broadcast](https://github.com/DoSomething/gambit-conversations/wiki/Broadcasts) from Customer.io. This traffic will directly impact out Message Bus [Blink](https://github.com/DoSomething/blink).
 
-This script is a wrapper over the open source load testing tool [k6](https://k6.io/). It is very flexible and powerful. The features currently implemented int he wrapper are basic and don't use the vast amount of other capabilities in k6.
+This script is a JS wrapper over [k6](https://k6.io/) - A very promising open source load testing tool. It is very flexible and powerful. The features currently implemented in the wrapper are basic and don't use the vast amount of other capabilities built into k6.
 
-### What's inside the vucode directory?
+### k6 & What's inside the vucode directory?
 
-The `/vucode/index.js` is **not** executed by Node.js. In fact Node.It is actually parsed by the k6 program which is written in Go. It uses ES6 javascript as the scripting language for its "VU code" (Virtual Users). It's tempting to treat this script as the usual node script, but you will regret it dearly. The parser is unforgiving with deviations and you can't just import (or require) any NPM modules. You can, [using browserify](https://k6.readme.io/docs/modules#section-npm-modules), but it doesn't work with all packages, plus it slows down the script significantly. This is the reason I had to build this wrapper around k6. Aside from this tradeoff, you can import your own [ES6 modules](https://docs.k6.io/v1.0/docs/modules#section-es6-modules) and [remote modules](https://docs.k6.io/v1.0/docs/modules#section-remote-modules) (slow).
+k6 is written in [Go](https://golang.org/). It uses [goja](https://github.com/dop251/goja) as it's embedded JavaScript interpreter.
+
+The `/vucode/index.js` file is **not** executed in [node](https://nodejs.org/en/), but interpreted inside the k6 module. "VU (Virtual User) code" is written in ES6 format and transpiled by [babel](https://babeljs.io/).
+
+#### Some gotchas
+
+- It's tempting to treat the VU code as the usual node script, but it isn't .
+- The parser can give some cryptic syntax errors if you are not careful with how you write your JS code. Unexpected EOF, etc.
+- Can't just import any NPM modules easily. You can, [using browserify](https://k6.readme.io/docs/modules#section-npm-modules), but it doesn't work with all packages, plus it slows down the script significantly.
+- **You can** import your own [ES6 modules](https://docs.k6.io/v1.0/docs/modules#section-es6-modules) and [remote modules](https://docs.k6.io/v1.0/docs/modules#section-remote-modules) (slow) though.
+- When importing your own modules, you have to declare the extension `.js`.
 
 
 ### How to setup
+There are many ways to get k6 installed. The steps here work for `Mac` dev environment using `homebrew` which is compatible with this wrapper.
+
 1. `brew update`
 2. `brew tap loadimpact/k6`
 3. `brew install k6`
@@ -20,12 +33,13 @@ The `/vucode/index.js` is **not** executed by Node.js. In fact Node.It is actual
 5. `npm i` To install needed modules.
 6. Update your `.env` file with correct variables. See the `.env.example` for guidance.
 
-#### To graph metrics gathered by k6.
+#### To graph metrics gathered by k6.**
 
 1. `brew install influxdb`
 2. `brew install grafana`
 
 > Instruction on how to use [influxdb + grafana](https://k6.readme.io/docs/influxdb-grafana).
+> ** Not supported in this script, yet.
 
 ### How to use
 While in the root directory of the broadcast script `/load-tests/broadcasts`.
@@ -136,3 +150,4 @@ Load test with **2** Virtual User for **10** iterations.
 
 - Support for long options.
 - Adding load test "recipies", selectable via options.
+- Support for [influxDB](https://docs.influxdata.com/influxdb/v1.3/introduction/getting_started/) integration for data persistence and visualization in [Grafana](http://docs.grafana.org/).
