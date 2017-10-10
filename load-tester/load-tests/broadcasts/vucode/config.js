@@ -9,7 +9,7 @@ export default {
     // SmsSid: "SMxxx",
     // SmsStatus: "sent",
     MessageStatus: "sent",
-    To: "+555555555",
+    To: "+15555555555",
     MessagingServiceSid: "MGxx",
     MessageSid: "SM2xx",
     AccountSid: "ACxx",
