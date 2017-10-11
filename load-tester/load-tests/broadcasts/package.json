@@ -1,0 +1,16 @@
+{
+  "name": "broadcast-load-test",
+  "version": "0.0.1",
+  "description": "Broadcast load tester",
+  "engines": {
+    "node": "8.6.0"
+  },
+  "keywords": [],
+  "author": "Rafael Pacas",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "knock-knock-jokes": "^1.7.0",
+    "yargs": "^9.0.1"
+  }
+}
