@@ -28,8 +28,8 @@ const k6ChildProcess = spawn(command, [], {
   shell: true,
   stdio: 'inherit'
 });
-k6ChildProcess.on('close', (code, signal) => {
-  console.log(`k6ChildProcess exited with ${code ? 'code' : 'signal'} ${code || signal}`);
+k6ChildProcess.on('close', (code) => {
+  console.log(`\nk6ChildProcess exited with code ${code}`);
 });
 k6ChildProcess.on('error', (error) => {
   console.log('Failed to start subprocess.');
