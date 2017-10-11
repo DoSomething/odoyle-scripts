@@ -16,4 +16,9 @@ module.exports = {
     numArgs: 1,
     demandOption: true,
   },
+  'I': {
+    alias: 'influx',
+    description: 'Output measurement results to influx DB.',
+    customOpt: true
+  },
 };

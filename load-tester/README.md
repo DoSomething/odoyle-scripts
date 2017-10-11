@@ -49,14 +49,16 @@ While in the root directory of the broadcast script `/load-tests/broadcasts`.
 #### Options
 Options passed to the k6 child process for load testing. More info on what they mean can be found in the [k6 docs - options](https://k6.readme.io/docs/options).
 
-Option | Description
---- | ---
-**-d** | *Duration*. A string specifying the total duration a test run should be run for.
-**-i** | *Iterations*. A number specifying a fixed number of iterations to execute of the script.
-**-u** | *Virtual Users*. A number specifying the number of VUs to run concurrently.
+Option | Description | custom
+--- | --- | --
+**-d** | *Duration*. A string specifying the total duration a test run should be run for. | `false`
+**-i** | *Iterations*. A number specifying a fixed number of iterations to execute of the script. | `false`
+**-u** | *Virtual Users*. A number specifying the number of VUs to run concurrently. | `false`
+**-I** | *Influx*. Use influxDB to store the measurements in. | `true`
 
-> Not all options are supported. Likewise, only short options are supported.
-> **-d**: good. **--duration**: Not supported.
+> Not all options are supported.
+> Only short options versions of the native commands are supported. **-d**: good. **--duration**: Not supported.
+> Custom commands are flags used internally to add other k6 feature functionality.
 
 #### Examples
 

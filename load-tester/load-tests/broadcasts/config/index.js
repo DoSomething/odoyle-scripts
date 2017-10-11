@@ -12,4 +12,6 @@ config.commandEnvVariables = {
   broadcastId,
 };
 
+config.dbName = 'broadcastsLoadTesting';
+
 module.exports = config;
