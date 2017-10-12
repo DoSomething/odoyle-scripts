@@ -3,22 +3,42 @@
  * @see https://github.com/yargs/yargs/blob/master/docs/api.md#optionskey-opt
  */
 module.exports = {
-  'd': {
-    describe: 'A string specifying the total duration a test run should be run for.',
-    nargs: 1,
-  },
-  'i': {
-    describe: 'A number specifying a fixed number of iterations to execute of the script.',
-    nargs: 1,
-  },
   'u': {
     description: 'A number specifying the number of VUs to run concurrently.',
+    nargs: 1,
+    demandOption: true,
+  },
+  'n': {
+    alias: 'amount-of-phones',
+    description: 'A number specifying the amount of phone numbers to try in this broadcast load test. \n Starting at +15551111110. \n Upper bound: +15552111110',
     numArgs: 1,
     demandOption: true,
+    customOpt: true,
+    number: true,
+  },
+  's': {
+    alias: 'scenario',
+    description: 'The scenario to use. Check the README or vucode/index.js for more info.',
+    nargs: 1,
+    demandOption: true,
+    choices: ['twilio-to-blink'],
+    customOpt: true,
+    requiresArg: true,
+    string: true,
+  },
+  'delay': {
+    description: 'Delay the execution of the tests by x amunt of seconds on each iteration.',
+    default: 0,
+    number: true,
+    nargs: 1,
+    customOpt: true,
   },
   'I': {
     alias: 'influx',
-    description: 'Output measurement results to influx DB.',
-    customOpt: true
+    description: 'The name of the influx DB the script shoule use to save measurement results. If it doesn\'t exist, it will get created.',
+    nargs: 1,
+    customOpt: true,
+    requiresArg: true,
+    string: true,
   },
 };
