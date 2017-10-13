@@ -9,6 +9,8 @@ const broadcastId = process.env.DS_CONVERSATIONS_BROADCAST_ID || 'tacosfest';
 
 config.broadcastSettingsUrl = `${broadcastSettingsBaseUrl}/${broadcastId}`;
 config.dbName = 'broadcastsLoadTesting';
-config.wsServerPort = process.env.MOBILE_GENERATOR_SERVER_PORT || 3200;
+config.wsServerPort = process.env.MOBILE_NUMBER_GENERATOR_SERVER_PORT || 3200;
+config.wsBaseURI = `ws://localhost:${config.wsServerPort}`;
+config.nextNumberMessage = 'getNextNumber';
 
 module.exports = config;

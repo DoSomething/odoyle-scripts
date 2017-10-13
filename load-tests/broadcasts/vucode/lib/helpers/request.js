@@ -24,7 +24,6 @@ function getBroadcastMock(number, status = queued) {
   return body;
 }
 function postTwilioRequestMocks(url, number) {
-  console.log(url, number);
   const queuedRes = post(url, getBroadcastMock(number, 'queued'));
   const sentRes = post(url, getBroadcastMock(number, 'sent'));
   const deliveredRes = post(url, getBroadcastMock(number, 'delivered'));

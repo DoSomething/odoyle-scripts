@@ -8,25 +8,31 @@ class MobileNumberGenerator {
     this.lowBound = lowBound || 1111110;
     this.upBound = upBound || 2111110;
     this.state = {
-      last: this.lowBound,
+      next: this.lowBound,
       count: 0,
+      limitReached: false,
     };
   }
 
   next() {
     if (this.state.last === this.upBound) {
+      this.state.limitReached = true;
       return 'MAX_REACHED';
     }
     this.state.count++;
-    return `${this.prefix}${this.state.last++}`;
+    return `${this.prefix}${this.state.next++}`;
   }
 
-  getCurrent() {
-    return `${this.prefix}${this.state.last}`;
+  getLast() {
+    return `${this.prefix}${this.state.next-1}`;
   }
 
   getCount() {
     return this.state.count;
+  }
+
+  isLimitReached() {
+    return this.state.limitReached;
   }
 }
 

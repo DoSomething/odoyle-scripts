@@ -10,7 +10,7 @@ module.exports = {
   },
   'n': {
     alias: 'amount-of-phones',
-    description: 'A number specifying the amount of phone numbers to try in this broadcast load test. \n Starting at +15551111110. \n Upper bound: +15552111110',
+    description: 'A number specifying the amount of phone numbers to try in this broadcast load test. \n Lower bound: +15551111110. \n Upper bound: +15552111110. \n Max of 1000000.',
     numArgs: 1,
     demandOption: true,
     customOpt: true,

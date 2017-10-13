@@ -1,11 +1,15 @@
 import http from 'k6/http';
-import ws from "k6/ws";
+import webSocket from "k6/ws";
 import { sleep, check, fail, group } from 'k6';
 
 import config from './config.js';
 import requestHelper from './lib/helpers/request.js';
 import Dispatcher from './lib/test-dispatcher/dispatcher.js';
 import loadTests from './lib/test-dispatcher/tests.js';
+
+function failTest(msg) {
+  fail(msg);
+}
 
 /**
  * vuCode - Entry point for the VU - Virtual User
@@ -15,16 +19,23 @@ import loadTests from './lib/test-dispatcher/tests.js';
 export default function() {
 
   let mobile;
-  const res = ws.connect('ws://localhost:3200', {}, (socket) => {
+  let limitReached;
+  const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
     socket.on('open', function open() {
-      socket.on('message', function (number) {
-        mobile = number;
+      socket.on('message', function (numberObj) {
+        const nextNumberObj = JSON.parse(numberObj);
+        if (nextNumberObj.limitReached) {
+          limitReached = true;
+        } else {
+          mobile = nextNumberObj.mobile;
+        }
         socket.close();
       });
-
-      socket.send('number');
+      socket.send(config.nextNumberMessage);
     });
   });
+
+  if (limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
 
   // TODO: Twilio to Blink (User response) load test
 
@@ -39,7 +50,6 @@ export default function() {
       }));
     });
   } else {
-    fail(`${config.scenario} is not a valid scenario!`);
+    failTest(`${config.scenario} is not a valid scenario!`);
   }
-
 }

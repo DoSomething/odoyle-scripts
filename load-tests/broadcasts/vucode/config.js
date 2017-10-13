@@ -3,9 +3,11 @@
  */
 
 export default {
-  scenario: `${__ENV.scenario}`,
-  delay: `${__ENV.delay}`,
-  statusCallbackUrl: `${__ENV.statusCallbackUrl}`,
+  nextNumberMessage: __ENV.nextNumberMessage,
+  wsBaseURI: __ENV.wsBaseURI,
+  scenario: __ENV.scenario,
+  delay: __ENV.delay,
+  statusCallbackUrl: __ENV.statusCallbackUrl,
   statusCallbackRequestMock: {
     // We won't use them to avoid confusion. They're included for legacy support according to Twilio
     // SmsSid: 'SMxxx',
