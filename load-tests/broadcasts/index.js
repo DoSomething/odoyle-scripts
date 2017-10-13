@@ -84,6 +84,9 @@ let k6ChildProcess;
   k6ChildProcess.on('error', (error) => {
     console.log('Failed to start subprocess.');
     console.log(error);
+    mobileNumberGeneratorServer.close(() => {
+      process.exit(0);
+    });
   });
 
 })(config.broadcastSettingsUrl, inputs);
