@@ -24,9 +24,8 @@ The `/vucode/index.js` file is **not** executed in [node](https://nodejs.org/en/
 scenario | flow | Description
 --- | ---
 `statusCallback` | T->B->C<br>------------- | Sends **3** requests to Blink. One per status change in Twilio (queued, sent, delivered). Blink's worker relays the request with `delivered` status to Conversations `/import-message` route. The rest are skipped.
-`userResponse`* | T->B->C<br>------------- | Sends **1** request to Blink. Blink relays the request to Conversations `/receive-message` route.
+`userResponse` | T->B->C<br>------------- | Sends **1** request to Blink. Blink relays the request to Conversations `/receive-message` route.
 
-> \* Not implemented yet.
 >  (T) Twilio. (B) Blink. (C) Conversations API.
 
 

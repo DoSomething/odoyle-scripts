@@ -15,6 +15,7 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
   const envObject = {
     wsBaseURI: config.wsBaseURI,
     nextNumberMessage: config.nextNumberMessage,
+    twilioInboundRelayUrl: config.twilioInboundRelayUrl,
   };
 
   const res = await axios.get(config.broadcastSettingsUrl);

@@ -37,15 +37,20 @@ export default function() {
 
   if (limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
 
-  // TODO: Twilio to Blink (User response) load test
-
   // TODO: Twilio to Blink (statusCallback) - Twilio to Blink (User response)
 
   // Twilio to Blink (statusCallback) load test
   if (config.scenario === 'statusCallback') {
     group('Test statusCallbacks to Blink', () => {
-      Dispatcher.execute(loadTests.twilioToBlink({
+      Dispatcher.execute(loadTests.statusCallback({
         url: config.statusCallbackUrl,
+        mobile,
+      }));
+    });
+  } else if (config.scenario === 'userResponse') {
+    group('Test user responses to Blink', () => {
+      Dispatcher.execute(loadTests.userResponse({
+        url: config.twilioInboundRelayUrl,
         mobile,
       }));
     });

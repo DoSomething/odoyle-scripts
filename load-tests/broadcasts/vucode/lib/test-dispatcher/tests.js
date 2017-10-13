@@ -19,14 +19,25 @@ function loadTest(fn) {
 }
 
 /**
- * Ends conversation with user
- * It responds with a custom message
+ * statusCallback loadTest
  *
  * @param  {object} args
  * @return {Command}
  */
-module.exports.twilioToBlink = function twilioToBlink(args) {
+module.exports.statusCallback = function statusCallback(args) {
   return new Command(
-    loadTest(actions.twilioToBlink),
+    loadTest(actions.statusCallback),
+    [args]);
+};
+
+/**
+ * userResponse loadTest
+ *
+ * @param  {object} args
+ * @return {Command}
+ */
+module.exports.userResponse = function userResponse(args) {
+  return new Command(
+    loadTest(actions.userResponse),
     [args]);
 };

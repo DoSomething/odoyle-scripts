@@ -21,7 +21,7 @@ module.exports = {
     description: 'The scenario to use. Check the README or vucode/index.js for more info.',
     nargs: 1,
     demandOption: true,
-    choices: ['statusCallback'],
+    choices: ['statusCallback', 'userResponse'],
     customOpt: true,
     requiresArg: true,
     string: true,
