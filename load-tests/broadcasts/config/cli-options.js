@@ -21,12 +21,13 @@ module.exports = {
     description: 'The scenario to use. Check the README or vucode/index.js for more info.',
     nargs: 1,
     demandOption: true,
-    choices: ['twilio-to-blink'],
+    choices: ['statusCallback'],
     customOpt: true,
     requiresArg: true,
     string: true,
   },
-  'delay': {
+  'd': {
+    alias: 'delay',
     description: 'Delay the execution of the tests by x amunt of seconds on each iteration.',
     default: 0,
     number: true,

@@ -1,20 +1,10 @@
-# Load tester
-Contains load testing scripts. Each script can be implemented independent of the others. They don't share modules or philosophy. This is just a repo for scripts that will load test services.
+# Load tests
 
-# Load test scripts
+## Broadcasts
 
-## Broadcasts [script](./load-tests/broadcasts)
-Load testing broadcasts consist on attempting to generate the same traffic we expect from Twilio when publishing a [Broadcast](https://github.com/DoSomething/gambit-conversations/wiki/Broadcasts) from Customer.io. This traffic will directly impact [Blink](https://github.com/DoSomething/blink), our Message Bus.
+Generates traffic load as similar as possible as the expected from Twilio when publishing a [Broadcast](https://github.com/DoSomething/gambit-conversations/wiki/Broadcasts) from Customer.io. This traffic will directly impact [Blink](https://github.com/DoSomething/blink), our Message Bus.
 
-name | scenario | Description
---- | ---
-`statusCallback` | T->B->C | Sends **3** requests to Blink. One per status change in Twilio (queued, sent, delivered). Blink's worker relays the request with `delivered` status to Conversations `/import-message` route. The rest are skipped.
-`userResponse`** | T->B->C | Sends **1** request to Blink. Blink relays the request to Conversations `/receive-message` route.
-
-> ** Not implemented yet.
->  (T) Twilio. (B) Blink. (C) Conversations API.
-
-This script is a JS wrapper over [k6](https://k6.io/) - A very promising open source load testing tool. It is very flexible and powerful. The features currently implemented in the wrapper are basic and don't use the vast amount of other capabilities built into k6.
+The script is a JS wrapper over [k6](https://k6.io/) - A very promising open source load testing tool. It is very flexible and powerful.
 
 ### k6 & What's inside the vucode directory?
 
@@ -29,9 +19,18 @@ The `/vucode/index.js` file is **not** executed in [node](https://nodejs.org/en/
 - Importing [browserified NPM](https://k6.readme.io/docs/modules#section-npm-modules) modules is a gamble. It can also slow down the script significantly.
 - Importing [remote modules](https://docs.k6.io/v1.0/docs/modules#section-remote-modules) is also unpredictable (The module might work... or not) and slows down the script.
 
+### Scenarios
 
-### How to setup
-There are many ways to get k6 installed. The steps here work for `Mac` dev environment using `homebrew` which is compatible with this wrapper.
+scenario | flow | Description
+--- | ---
+`statusCallback` | T->B->C<br>------------- | Sends **3** requests to Blink. One per status change in Twilio (queued, sent, delivered). Blink's worker relays the request with `delivered` status to Conversations `/import-message` route. The rest are skipped.
+`userResponse`* | T->B->C<br>------------- | Sends **1** request to Blink. Blink relays the request to Conversations `/receive-message` route.
+
+> \* Not implemented yet.
+>  (T) Twilio. (B) Blink. (C) Conversations API.
+
+
+### Install (Mac)
 
 1. `brew update`
 2. `brew tap loadimpact/k6`
@@ -45,12 +44,14 @@ There are many ways to get k6 installed. The steps here work for `Mac` dev envir
 1. `brew install influxdb`
 2. `brew install grafana`
 
+> Other ways to [install](https://docs.k6.io/docs/installation) k6.
 > Instruction on how to use [influxdb + grafana](https://k6.readme.io/docs/influxdb-grafana).
 
-### How to use
-While in the root directory of the broadcast script `/load-tests/broadcasts`.
+### Getting Started
+Inside the  `/broadcasts` directory.
 
-1. `node index.js [OPTIONS]`
+1. `npm i`
+2. `node index.js [OPTIONS]`
 
 #### Options
 
