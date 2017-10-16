@@ -3,7 +3,8 @@
  */
 
 export default {
-  nextNumberMessage: __ENV.nextNumberMessage,
+  getNextMobile: __ENV.getNextMobile,
+  getNextUpdatedMobile: __ENV.getNextUpdatedMobile,
   wsBaseURI: __ENV.wsBaseURI,
   scenario: __ENV.scenario,
   delay: __ENV.delay,

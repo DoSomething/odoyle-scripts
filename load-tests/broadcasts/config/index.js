@@ -11,7 +11,8 @@ config.broadcastSettingsUrl = `${broadcastSettingsBaseUrl}/${broadcastId}`;
 config.dbName = 'broadcastsLoadTesting';
 config.wsServerPort = process.env.MOBILE_NUMBER_GENERATOR_SERVER_PORT || 3200;
 config.wsBaseURI = `ws://localhost:${config.wsServerPort}`;
-config.nextNumberMessage = 'getNextNumber';
+config.getNextMobile = 'nextMobile';
+config.getNextUpdatedMobile = 'nexUpdatedMobile';
 config.twilioInboundRelayUrl = process.env.DS_BLINK_SMS_INBOUND_RELAY_URL || 'http://puppet:totallysecret@localhost:5050/api/v1/webhooks/twilio-sms-inbound';
 
 module.exports = config;

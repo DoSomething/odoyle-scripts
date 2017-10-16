@@ -18,40 +18,62 @@ function failTest(msg) {
  */
 export default function() {
 
-  let mobile;
-  let limitReached;
-  const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-    socket.on('open', function open() {
-      socket.on('message', function (numberObj) {
-        const nextNumberObj = JSON.parse(numberObj);
-        if (nextNumberObj.limitReached) {
-          limitReached = true;
-        } else {
-          mobile = nextNumberObj.mobile;
-        }
-        socket.close();
-      });
-      socket.send(config.nextNumberMessage);
-    });
-  });
-
-  if (limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
-
-  // TODO: Twilio to Blink (statusCallback) - Twilio to Blink (User response)
-
-  // Twilio to Blink (statusCallback) load test
   if (config.scenario === 'statusCallback') {
+
+
+    let mobileNumberObj;
+
+    /**
+     * Gets the next number available to test
+     * @see https://k6.readme.io/docs/k6-websocket-api
+     */
+    const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
+      socket.on('open', function open() {
+        socket.on('message', function (mobileObj) {
+          mobileNumberObj = JSON.parse(mobileObj);
+          socket.close();
+        });
+        socket.send(config.getNextMobile);
+      });
+    });
+
+    if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
+
     group('Test statusCallbacks to Blink', () => {
       Dispatcher.execute(loadTests.statusCallback({
         url: config.statusCallbackUrl,
-        mobile,
+        mobile: mobileNumberObj.mobile,
       }));
     });
   } else if (config.scenario === 'userResponse') {
+
+    let mobileNumberObj;
+    let drained = false;
+
+    /**
+     * Gets the next updated number available to test
+     * @see https://k6.readme.io/docs/k6-websocket-api
+     */
+    const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
+      socket.on('open', function open() {
+        socket.on('message', function (mobileObj) {
+          if (mobileObj === 'drained') {
+            drained = true;
+          } else {
+            mobileNumberObj = JSON.parse(mobileObj);
+          }
+          socket.close();
+        });
+        socket.send(config.getNextUpdatedMobile);
+      });
+    });
+
+    if (drained) failTest(`Error: Mobile number generator drained.`);
+
     group('Test user responses to Blink', () => {
       Dispatcher.execute(loadTests.userResponse({
         url: config.twilioInboundRelayUrl,
-        mobile,
+        mobile: mobileNumberObj.mobile,
       }));
     });
   } else {

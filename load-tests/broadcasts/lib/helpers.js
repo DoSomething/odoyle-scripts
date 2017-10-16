@@ -3,18 +3,33 @@ const axios = require('axios');
 const WebSocket = require('ws');
 const spawn = require('child_process').spawn;
 
+module.exports.getMobileNumberGenSocket = function getMobileNumberGenSocket(wsUrl) {
+  return new WebSocket(wsUrl);
+}
+
 module.exports.getMobileNumberGenServer = function getMobileNumberGenServer(port) {
+  console.log(`getMobileNumberGenServer(): Getting server.`);
   return new WebSocket.Server({ port });
 }
 
+module.exports.killChildProcess = function killChildProcess(pid, cb, cbArgs = []) {
+  console.log(`killChildProcess(): Killing child process: ${pid}`);
+  process.kill(pid, 'SIGKILL');
+  if (typeof cb === 'function') {
+    cb.apply(this, cbArgs);
+  }
+}
+
 module.exports.closeServer = function closeServer(server, cb) {
+  console.log(`closeServer(): Closing server.`);
   return server.close(cb);
 };
 
 module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
   const envObject = {
     wsBaseURI: config.wsBaseURI,
-    nextNumberMessage: config.nextNumberMessage,
+    getNextMobile: config.getNextMobile,
+    getNextUpdatedMobile: config.getNextUpdatedMobile,
     twilioInboundRelayUrl: config.twilioInboundRelayUrl,
   };
 
