@@ -8,7 +8,6 @@ const mobileNumbers = [];
 
 mobileNumberGenServer.on('connection', (socket, req) => {
   socket.on('message', function incoming(message) {
-    console.log('yo!', message);
     try {
       if (message === config.getNextMobile) {
         const mobile = mobileNumberGen.next();

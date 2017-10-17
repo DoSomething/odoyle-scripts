@@ -18,8 +18,24 @@ function failTest(msg) {
  */
 export default function() {
 
+  let delay;
+  if (config.delay) {
+    if (config.delay === 'random') {
+
+      /**
+       * The 2.5 constant is there to prevent the userResponse script from starting faster than the statusCallback,
+       * I want both scripts to be completely independent of each other in the future, but it's OK for this MVP.
+       */
+      delay = Math.floor(Math.random() * parseFloat(config.randomDelayMaxSecods) + 2.5);
+    } else {
+      delay = parseFloat(config.delay);
+    }
+  }
   if (config.scenario === 'statusCallback') {
 
+    if (delay) {
+      sleep(delay);
+    }
 
     let mobileNumberObj;
 
@@ -45,7 +61,13 @@ export default function() {
         mobile: mobileNumberObj.mobile,
       }));
     });
+
   } else if (config.scenario === 'userResponse') {
+
+
+    if (delay) {
+      sleep(delay);
+    }
 
     let mobileNumberObj;
     let drained = false;
@@ -76,6 +98,7 @@ export default function() {
         mobile: mobileNumberObj.mobile,
       }));
     });
+
   } else {
     failTest(`${config.scenario} is not a valid scenario!`);
   }

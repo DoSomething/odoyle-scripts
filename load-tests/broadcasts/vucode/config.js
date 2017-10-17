@@ -8,6 +8,7 @@ export default {
   wsBaseURI: __ENV.wsBaseURI,
   scenario: __ENV.scenario,
   delay: __ENV.delay,
+  randomDelayMaxSecods: __ENV.randomDelayMaxSecods,
   statusCallbackUrl: __ENV.statusCallbackUrl,
   twilioInboundRelayUrl: __ENV.twilioInboundRelayUrl,
   statusCallbackRequestMock: {

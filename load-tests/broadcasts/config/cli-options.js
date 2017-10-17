@@ -28,9 +28,9 @@ module.exports = {
   },
   'd': {
     alias: 'delay',
-    description: 'Delay the execution of the tests by x amunt of seconds on each iteration.',
+    description: 'Delay the execution of the tests by x amunt of seconds on each iteration. If you desire a random delay, type "random"',
     default: 0,
-    number: true,
+    string: true,
     nargs: 1,
     customOpt: true,
   },

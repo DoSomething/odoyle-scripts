@@ -47,6 +47,7 @@ function checkUserResponse(res, code = 200) {
   check(res, object);
 }
 function checkUserResponseOutboundTemplate(res, template) {
+  if (res.status !== 200) return;
   const object = {};
   const body = JSON.parse(res.body);
   const data = body.data || { messages: {}};

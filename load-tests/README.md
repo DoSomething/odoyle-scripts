@@ -66,7 +66,7 @@ Option | Description | native
 **-I** | *Influx*. Use influxDB to store the measurements in. | `F`
 **-s** | *Scenario*. Which load test scenario to run. | `F`
 **-n** | *Amount of phones*. Number of phones we will be using for this broadcast. Starts at `+15551111110`. Max is `+15552111110`. | `F`
-**--delay** | *Delay*. Delay the execution of the tests by x amount of seconds on each iteration. Used to add more flexibility when calibrating `rps`. **(not implemented yet)** | `F`
+**--delay** | *Delay*. Delay the execution of the tests by x amount of seconds on each iteration. Used to add more flexibility when calibrating `rps`. | `F`
 
 > Not all k6 options are supported.
 

@@ -31,6 +31,7 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
     getNextMobile: config.getNextMobile,
     getNextUpdatedMobile: config.getNextUpdatedMobile,
     twilioInboundRelayUrl: config.twilioInboundRelayUrl,
+    randomDelayMaxSecods: config.randomDelayMaxSecods,
   };
 
   const res = await axios.get(config.broadcastSettingsUrl);
