@@ -11,14 +11,8 @@ function failTest(msg) {
   fail(msg);
 }
 
-/**
- * vuCode - Entry point for the VU - Virtual User
- * @see https://docs.k6.io/docs/running-k6
- * @return {type}  description
- */
-export default function() {
-
-  let delay;
+function getDelay() {
+  let delay = 0;
   if (config.delay) {
     if (config.delay === 'random') {
 
@@ -31,6 +25,18 @@ export default function() {
       delay = parseFloat(config.delay);
     }
   }
+  return delay;
+}
+
+/**
+ * vuCode - Entry point for the VU - Virtual User
+ * @see https://docs.k6.io/docs/running-k6
+ * @return {type}  description
+ */
+export default function() {
+
+  const delay = getDelay();
+
   if (config.scenario === 'statusCallback') {
 
     if (delay) {
@@ -41,6 +47,7 @@ export default function() {
 
     /**
      * Gets the next number available to test
+     * TODO: DRY
      * @see https://k6.readme.io/docs/k6-websocket-api
      */
     const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
@@ -74,16 +81,14 @@ export default function() {
 
     /**
      * Gets the next updated number available to test
+     * TODO: DRY
      * @see https://k6.readme.io/docs/k6-websocket-api
      */
     const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
       socket.on('open', function open() {
         socket.on('message', function (mobileObj) {
-          if (mobileObj === 'drained') {
-            drained = true;
-          } else {
-            mobileNumberObj = JSON.parse(mobileObj);
-          }
+          mobileNumberObj = JSON.parse(mobileObj);
+          drained = mobileNumberObj.drained;
           socket.close();
         });
         socket.send(config.getNextUpdatedMobile);
@@ -96,6 +101,7 @@ export default function() {
       Dispatcher.execute(loadTests.userResponse({
         url: config.twilioInboundRelayUrl,
         mobile: mobileNumberObj.mobile,
+        text: Math.floor(Math.random() * 2) ? 'Y' : 'N',
       }));
     });
 

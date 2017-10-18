@@ -41,33 +41,30 @@ function postStatusCallbackMock(url, mobile) {
  * User Response
  */
 
-function checkUserResponse(res, code = 200) {
+function checkUserResponseStatusCode(res, code = 200) {
   const object = {};
   object[`sendingUserResponse${code}`] = (res) => res.status === code;
   check(res, object);
 }
-function checkUserResponseOutboundTemplate(res, template) {
+function checkUserResponseOutboundTemplate(res) {
   if (res.status !== 200) return;
   const object = {};
   const body = JSON.parse(res.body);
   const data = body.data || { messages: {}};
   const outboundMessages = data.messages.outbound || [{}];
-  object[`gotUserResponseTemplate-${template}`] = (res) => outboundMessages[0].template === template;
+  object[`gotUserResponseTemplate-${outboundMessages[0].template}`] = (res) =>
+    outboundMessages[0].template === outboundMessages[0].template;
   check(res, object);
 }
-function getUserResponseMock(mobile) {
+function getUserResponseMock(mobile, text = 'N') {
   const mock = _.extend({}, config.userResponseRequestMock);
   mock.From = mobile;
-  // TODO make this dynamic (ramdom Y/N)
-  mock.Body = 'N';
+  mock.Body = text;
   const body = JSON.stringify(mock);
   return body;
 }
-// TODO Make it dynamic to test templates based on the Body of the mock
-function postUserResponseMock(url, mobile) {
-  const res = post(url, getUserResponseMock(mobile));
-  checkUserResponse(res);
-  checkUserResponseOutboundTemplate(res, 'declinedSignup')
+function postUserResponseMock(url, mobile, text) {
+  return post(url, getUserResponseMock(mobile, text));
 }
 
 module.exports = {
@@ -75,7 +72,7 @@ module.exports = {
   checkStatusCallbackUpdates,
   getStatusCallbackMock,
   postStatusCallbackMock,
-  checkUserResponse,
+  checkUserResponseStatusCode,
   checkUserResponseOutboundTemplate,
   getUserResponseMock,
   postUserResponseMock,

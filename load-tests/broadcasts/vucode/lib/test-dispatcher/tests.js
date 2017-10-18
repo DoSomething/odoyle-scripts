@@ -1,5 +1,6 @@
 import Command from './command.js';
 import actions from './actions.js';
+import requestHelper from '../helpers/request.js';
 
 /**
  * Decorators
@@ -12,10 +13,26 @@ import actions from './actions.js';
   * @param  {function} fn function to be wrapped.
   * @return {function}    wrapped function
   */
-function loadTest(fn) {
+function genericTest(fn) {
   return (args) => {
     return fn(args);
   };
+}
+
+/**
+ * Decorator.
+ * Returns passed function wrapped with functionality.
+ *
+ * @param  {function} fn function to be wrapped.
+ * @return {function}    wrapped function
+ */
+function userResponseTest(fn) {
+ return (args) => {
+   const res = fn(args);
+   requestHelper.checkUserResponseStatusCode(res);
+   requestHelper.checkUserResponseOutboundTemplate(res);
+   return res;
+ };
 }
 
 /**
@@ -26,7 +43,7 @@ function loadTest(fn) {
  */
 module.exports.statusCallback = function statusCallback(args) {
   return new Command(
-    loadTest(actions.statusCallback),
+    genericTest(actions.statusCallback),
     [args]);
 };
 
@@ -38,6 +55,6 @@ module.exports.statusCallback = function statusCallback(args) {
  */
 module.exports.userResponse = function userResponse(args) {
   return new Command(
-    loadTest(actions.userResponse),
+    userResponseTest(actions.userResponse),
     [args]);
 };

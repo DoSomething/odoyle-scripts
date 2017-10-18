@@ -6,25 +6,35 @@ const mobileNumberGen =  require('./lib/mobile-generator');
 const mobileNumberGenServer = helpers.getMobileNumberGenServer(config.wsServerPort);
 const mobileNumbers = [];
 
+function getMobileNumberObj(next = true) {
+  let obj = {};
+  if (next) {
+    obj.mobile = mobileNumberGen.next();
+    obj.limitReached = mobileNumberGen.isLimitReached();
+  } else {
+    obj.mobile = mobileNumbers.shift();
+    obj.drained = obj.mobile === undefined;
+  }
+  return obj;
+}
+
+function sendStringMessage(socket, message) {
+  return socket.send(JSON.stringify(message));
+}
+
 mobileNumberGenServer.on('connection', (socket, req) => {
   socket.on('message', function incoming(message) {
     try {
       if (message === config.getNextMobile) {
-        const mobile = mobileNumberGen.next();
-        const mobileNumberObj = {
-          mobile,
-          limitReached: mobileNumberGen.isLimitReached()
-        };
-        console.log(`${config.getNextMobile}:`, mobile);
-        mobileNumbers.push(mobile);
-        socket.send(JSON.stringify(mobileNumberObj));
+        const mobileNumberObj = getMobileNumberObj(true);
+        console.log(`${config.getNextMobile}:`, mobileNumberObj.mobile);
+        mobileNumbers.push(mobileNumberObj.mobile);
+        sendStringMessage(socket, mobileNumberObj);
       } else if (message === config.getNextUpdatedMobile) {
         setTimeout(() => {
-          const mobileNumberObj = {
-            mobile: mobileNumbers.shift(),
-          };
+          const mobileNumberObj = getMobileNumberObj(false);
           console.log(`${config.getNextUpdatedMobile}:`, mobileNumberObj.mobile);
-          socket.send(mobileNumberObj.mobile ? JSON.stringify(mobileNumberObj) : 'drained');
+          sendStringMessage(socket, mobileNumberObj);
         }, 100);
       }
     } catch (error) {
