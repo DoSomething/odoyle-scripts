@@ -6,7 +6,7 @@ class MobileNumberGenerator {
   constructor(prefix, lowBound, upBound) {
     this.prefix = prefix || '+1555';
     this.lowBound = lowBound || 1111110;
-    this.upBound = upBound || 2111110;
+    this.upBound = upBound || 9111110;
     this.state = {
       next: this.lowBound,
       count: 0,
