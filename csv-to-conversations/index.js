@@ -14,19 +14,20 @@ async function getDB() {
   return db;
 }
 
-async function upsertRows(rows, campaignId, topic = 'random') {
+async function upsertRows(rows, campaignId) {
   const db = await getDB();
   const result = {
     processed: 0,
     errors: [],
   };
   const importSource = args.source || 'TGM';
+  const topic = args.topic || 'random';
 
   for (let i = 0; i < rows.length; i++) {
     result.processed++;
+    const mobile = rows[i].phone_number;
     try {
-      const row = rows[i];
-      const platformUserId = helpers.formatMobileNumber(row.phone_number);
+      const platformUserId = helpers.formatMobileNumber(mobile);
       const data = {
         platform: 'sms',
         platformUserId,
@@ -38,7 +39,7 @@ async function upsertRows(rows, campaignId, topic = 'random') {
       await db.collection('conversations').update(query, data, { upsert: true });
       logger.info('success', { data });
     } catch(error) {
-      result.errors.push(error);
+      result.errors.push({ mobile, error: error.message });
       logger.error(error);
     }
   }
@@ -61,7 +62,7 @@ const main = async (stream) => {
   const errors = result.errors;
   logger.info(`Processed ${result.processed} rows.`);
   if (errors.length) {
-    logger.info(`Found ${errors.length} errors:`, errors);
+    logger.info(`There were ${errors.length} errors:`, errors);
   }
   process.exit(0);
 }
