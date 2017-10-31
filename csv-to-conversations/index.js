@@ -20,6 +20,7 @@ async function upsertRows(rows, campaignId, topic = 'random') {
     processed: 0,
     errors: [],
   };
+  const importSource = args.source || 'TGM';
 
   for (let i = 0; i < rows.length; i++) {
     result.processed++;
@@ -31,7 +32,7 @@ async function upsertRows(rows, campaignId, topic = 'random') {
         platformUserId,
         campaignId,
         topic,
-        importSource: 'import',
+        importSource,
       };
       const query = { platformUserId  };
       await db.collection('conversations').update(query, data, { upsert: true });
