@@ -1,5 +1,5 @@
 {
-  "name": "tgm-conversations",
+  "name": "csv-to-conversations",
   "version": "1.0.0",
   "description": "Imports csv into Gambit Conversations DB",
   "main": "index.js",
