@@ -1,6 +1,10 @@
 'use strict';
 
+require('dotenv').config();
+
+const fs = require('fs');
 const logger = require('winston');
+const neatCsv = require('neat-csv');
 const helpers = require('./lib/helpers');
 const config = require('./config');
 
@@ -21,4 +25,24 @@ async function init() {
   }
 }
 
-init();
+// ------- Main function --------------------------------------------------------
+
+const importConversations = async (stream) => {
+  const data = await neatCsv(stream, {
+    separator: ',',
+  });
+
+  const rowCount = data.length;
+  data.forEach((row, i) => {
+    const mobile = helpers.formatMobileNumber(row.phone_number);
+    logger.info('Importing', { i, mobile });
+  });
+
+  logger.info(`Processed ${rowCount} rows.`);
+}
+
+const path = '../../TGM/7554.csv'
+const csvFile = fs.createReadStream(path)
+  .on('error', (e) => winston.error(`Parse error | ${e}`));
+
+importConversations(csvFile);
