@@ -30,7 +30,6 @@ function userResponseTest(fn) {
  return (args) => {
    const res = fn(args);
    requestHelper.checkUserResponseStatusCode(res);
-   requestHelper.checkUserResponseOutboundTemplate(res);
    return res;
  };
 }

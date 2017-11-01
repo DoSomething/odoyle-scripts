@@ -26,6 +26,7 @@ function getStatusCallbackMock(mobile, status = queued) {
   mock.MessageStatus = status;
   mock.To = mobile;
   const body = JSON.stringify(mock);
+
   return body;
 }
 function postStatusCallbackMock(url, mobile) {
@@ -41,19 +42,9 @@ function postStatusCallbackMock(url, mobile) {
  * User Response
  */
 
-function checkUserResponseStatusCode(res, code = 200) {
+function checkUserResponseStatusCode(res) {
   const object = {};
-  object[`sendingUserResponse${code}`] = (res) => res.status === code;
-  check(res, object);
-}
-function checkUserResponseOutboundTemplate(res) {
-  if (res.status !== 200) return;
-  const object = {};
-  const body = JSON.parse(res.body);
-  const data = body.data || { messages: {}};
-  const outboundMessages = data.messages.outbound || [{}];
-  object[`gotUserResponseTemplate-${outboundMessages[0].template}`] = (res) =>
-    outboundMessages[0].template === outboundMessages[0].template;
+  object[`sendingUserResponse-${res.status}`] = (res) => res.status === res.status;
   check(res, object);
 }
 function getUserResponseMock(mobile, text = 'N') {
@@ -73,7 +64,6 @@ module.exports = {
   getStatusCallbackMock,
   postStatusCallbackMock,
   checkUserResponseStatusCode,
-  checkUserResponseOutboundTemplate,
   getUserResponseMock,
   postUserResponseMock,
 };
