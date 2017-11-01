@@ -1,0 +1,21 @@
+{
+  "name": "csv-to-conversations",
+  "version": "1.0.0",
+  "description": "Imports csv into Gambit Conversations DB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "7.7.2"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "google-libphonenumber": "^3.0.7",
+    "mongodb": "^2.2.33",
+    "neat-csv": "^2.1.0",
+    "yargs": "^10.0.3"
+  }
+}
