@@ -39,7 +39,7 @@ async function upsertRows(rows, campaignId) {
       await db.collection('conversations').update(query, data, { upsert: true });
       logger.info('success', { data });
     } catch(error) {
-      result.errors.push({ mobile, error: error.message });
+      result.errors.push({ i, mobile, error: error.message });
       logger.error(error);
     }
   }
