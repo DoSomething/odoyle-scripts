@@ -1,7 +1,7 @@
 {
   "trigger": {
     "schedule": {
-      "interval": "1m"
+      "interval": "5m"
     }
   },
   "input": {
@@ -22,7 +22,12 @@
                 },
                 {
                   "match": {
-                    "code": "debug_retry_manager_redeliver_scheduled"
+                    "message": "crashed"
+                  }
+                },
+                {
+                  "match": {
+                    "syslog_facility": "syslogd"
                   }
                 }
               ],
@@ -30,7 +35,7 @@
                 {
                   "range": {
                     "@timestamp": {
-                      "gte": "now-1h"
+                      "gte": "now-5m"
                     }
                   }
                 }
@@ -44,7 +49,7 @@
   "condition": {
     "compare": {
       "ctx.payload.hits.total": {
-        "gte": 50
+        "gt": 0
       }
     }
   },
@@ -60,8 +65,8 @@
           "attachments": [
             {
               "color": "danger",
-              "title": "Increased Retries",
-              "text": "<!subteam^S7U6LNGJ1|odev>: Encountered {{ctx.payload.hits.total}} retries for the past hour.\n<https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-retries|Acknowledge>"
+              "title": "Dyno Crashes Discovered",
+              "text": "<!subteam^S7U6LNGJ1|odev>: Found heroku dyno crashes.\n<https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/goto/8e6a98aa26cca29020d5b069c0401947|View syslog> | <https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-crahses|Acknowledge>"
             }
           ]
         }

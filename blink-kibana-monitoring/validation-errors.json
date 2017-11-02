@@ -1,7 +1,7 @@
 {
   "trigger": {
     "schedule": {
-      "interval": "1m"
+      "interval": "30m"
     }
   },
   "input": {
@@ -22,7 +22,7 @@
                 },
                 {
                   "match": {
-                    "code": "debug_retry_manager_redeliver_scheduled"
+                    "code": "error_validation_failed"
                   }
                 }
               ],
@@ -44,7 +44,7 @@
   "condition": {
     "compare": {
       "ctx.payload.hits.total": {
-        "gte": 50
+        "gte": 100
       }
     }
   },
@@ -60,8 +60,8 @@
           "attachments": [
             {
               "color": "danger",
-              "title": "Increased Retries",
-              "text": "<!subteam^S7U6LNGJ1|odev>: Encountered {{ctx.payload.hits.total}} retries for the past hour.\n<https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-retries|Acknowledge>"
+              "title": "Increased Validation Errors",
+              "text": "<!subteam^S7U6LNGJ1|odev>: Encountered {{ctx.payload.hits.total}} validation errors for the past hour.\n<https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/goto/120e2dcd049b81220c043f9c3cc094bc|View errors> | <https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-validation-errors|Acknowledge>"
             }
           ]
         }
