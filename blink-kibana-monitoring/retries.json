@@ -1,0 +1,71 @@
+{
+  "trigger": {
+    "schedule": {
+      "interval": "1m"
+    }
+  },
+  "input": {
+    "search": {
+      "request": {
+        "search_type": "query_then_fetch",
+        "indices": [],
+        "types": [],
+        "body": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "match": {
+                    "heroku_drain_id": "d.5ab6fa0a-2f02-4609-b7db-b4e17e95f429"
+                  }
+                },
+                {
+                  "match": {
+                    "code": "debug_retry_manager_redeliver_scheduled"
+                  }
+                }
+              ],
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-1h"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "condition": {
+    "compare": {
+      "ctx.payload.hits.total": {
+        "gte": 50
+      }
+    }
+  },
+  "actions": {
+    "notify-slack": {
+      "throttle_period_in_millis": 300000,
+      "slack": {
+        "message": {
+          "from": "Blink",
+          "to": [
+            "#blink"
+          ],
+          "attachments": [
+            {
+              "color": "danger",
+              "title": "Increased Retries",
+              "text": "<!subteam^S7U6LNGJ1|odev>: Encountered {{ctx.payload.hits.total}} retries for the past hour.\n<https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-retries|Acknowledge> | <https://bit.ly/blink-dashboard-2-0|Open Dashboard>"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
