@@ -65,7 +65,7 @@
             {
               "color": "warning",
               "title": "Daily Validation Errors Report",
-              "text": "Encountered {{ctx.payload.hits.total}} validation errors since yesterday.\n<https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/goto/1cda156be9f0acc0f6d329554e4b8e96|View errors> | <https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-validation-errors-daily|Acknowledge>"
+              "text": "Encountered {{ctx.payload.hits.total}} validation errors since yesterday.\n<https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/goto/1cda156be9f0acc0f6d329554e4b8e96|View errors> | <https://bit.ly/blink-dashboard-2-0|Open Dashboard>"
             }
           ]
         }
