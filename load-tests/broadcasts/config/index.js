@@ -4,7 +4,7 @@ const config = {
   cliOptions,
 };
 
-const broadcastSettingsBaseUrl = process.env.DS_CONVERSATIONS_BROADCASTS_SETTINGS_URL || 'http://puppet:totallysecret@localhost:5100/api/v1/broadcast-settings';
+const broadcastSettingsBaseUrl = process.env.DS_CONVERSATIONS_BROADCAST_SETTINGS_URL || 'http://puppet:totallysecret@localhost:5100/api/v1/broadcast-settings';
 const broadcastId = process.env.DS_CONVERSATIONS_BROADCAST_ID || 'tacosfest';
 
 config.broadcastSettingsUrl = `${broadcastSettingsBaseUrl}/${broadcastId}`;
