@@ -30,7 +30,7 @@
                 {
                   "range": {
                     "@timestamp": {
-                      "gte": "now-1h"
+                      "gte": "now-1m"
                     }
                   }
                 }
@@ -44,7 +44,7 @@
   "condition": {
     "compare": {
       "ctx.payload.hits.total": {
-        "gte": 50
+        "gte": 10
       }
     }
   },
@@ -61,7 +61,7 @@
             {
               "color": "danger",
               "title": "Increased Retries",
-              "text": "<!subteam^S7U6LNGJ1|odev>: Encountered {{ctx.payload.hits.total}} retries for the past hour.\n<https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-retries|Acknowledge>"
+              "text": "<!subteam^S7U6LNGJ1|odev>: Encountered {{ctx.payload.hits.total}} retries for the past minute.\n<https://bit.ly/blink-dashboard-2-0|Open Dashboard> | <https://f1dc9460e3fc9995e3105d273237338a.us-east-1.aws.found.io:9243/app/kibana#/management/elasticsearch/watcher/watches/watch/blink-retries|Acknowledge>"
             }
           ]
         }
