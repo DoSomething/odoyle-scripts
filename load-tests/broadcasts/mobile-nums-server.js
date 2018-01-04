@@ -27,7 +27,9 @@ function respond(socket, message) {
 
 mobileNumberGenServer.on('listening', () => console.log('Server has been bound.\nAwaiting connections.'));
 
+// When a WebSocket client connects to the server
 mobileNumberGenServer.on('connection', (socket, req) => {
+  // When receiving a message through the connected socket.
   socket.on('message', function incoming(message) {
     try {
       if (message === config.getNextTestMobile) {
@@ -43,12 +45,13 @@ mobileNumberGenServer.on('connection', (socket, req) => {
         }, 100);
       }
     } catch (error) {
-      console.log(`mobileNumberGenServer.on('message') catched error:`, error);
+      console.log(`mobileNumberGenServer.on('connection') -> socket.on('message') error:`, error);
       helpers.closeServer(mobileNumberGenServer);
     }
   });
 });
 
+// Closes the server when an error is detected (terminates all clients, calls callback when done).
 mobileNumberGenServer.on('error', (error) => {
   console.log(`mobileNumberGenServer.on('error'): Closing server and killing child processes.`, error);
   helpers.closeServer(mobileNumberGenServer);

@@ -17,8 +17,8 @@ function getDelay() {
     if (config.delay === 'random') {
 
       /**
-       * The 2.5 constant is there to prevent the userResponse script from starting faster than the statusCallback,
-       * I want both scripts to be completely independent of each other in the future, but it's OK for this MVP.
+       * The 2.5 constant is there to prevent the userResponse script from starting faster than other scripts,
+       * Ideally both scripts should be completely independent of each other in the future, but it's OK for this MVP.
        */
       delay = Math.floor(Math.random() * parseFloat(config.randomDelayMaxSecods) + 2.5);
     } else {
@@ -37,8 +37,7 @@ export default function() {
 
   const delay = getDelay();
 
-  if (config.scenario === 'statusCallback') {
-
+  if (config.scenario === 'broadcast') {
     if (delay) {
       sleep(delay);
     }
@@ -62,9 +61,9 @@ export default function() {
 
     if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
 
-    group('Test statusCallbacks to Blink', () => {
-      Dispatcher.execute(loadTests.statusCallback({
-        url: config.statusCallbackUrl,
+    group('Test broadcast to Blink', () => {
+      Dispatcher.execute(loadTests.broadcast({
+        url: config.blinkBroadcastWebhookUrl,
         mobile: mobileNumberObj.mobile,
       }));
     });
