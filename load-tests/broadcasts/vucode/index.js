@@ -56,7 +56,7 @@ export default function() {
           mobileNumberObj = JSON.parse(mobileObj);
           socket.close();
         });
-        socket.send(config.getNextMobile);
+        socket.send(config.getNextTestMobile);
       });
     });
 
@@ -91,7 +91,7 @@ export default function() {
           drained = mobileNumberObj.drained;
           socket.close();
         });
-        socket.send(config.getNextUpdatedMobile);
+        socket.send(config.getNextUsedTestMobile);
       });
     });
 

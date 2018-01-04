@@ -21,7 +21,7 @@ function getMobileNumberObj(next = true) {
   return obj;
 }
 
-function sendStringMessage(socket, message) {
+function respond(socket, message) {
   return socket.send(JSON.stringify(message));
 }
 
@@ -30,30 +30,26 @@ mobileNumberGenServer.on('listening', () => console.log('Server has been bound.\
 mobileNumberGenServer.on('connection', (socket, req) => {
   socket.on('message', function incoming(message) {
     try {
-      if (message === config.getNextMobile) {
+      if (message === config.getNextTestMobile) {
         const mobileNumberObj = getMobileNumberObj(true);
         console.log(`generated mobile: ${mobileNumberObj.mobile}. Count: ${mobileNumberObj.count}`);
         mobileNumbers.push(mobileNumberObj.mobile);
-        sendStringMessage(socket, mobileNumberObj);
-      } else if (message === config.getNextUpdatedMobile) {
+        respond(socket, mobileNumberObj);
+      } else if (message === config.getNextUsedTestMobile) {
         setTimeout(() => {
           const mobileNumberObj = getMobileNumberObj(false);
           console.log(`processing next available number: ${mobileNumberObj.mobile}.`);
-          sendStringMessage(socket, mobileNumberObj);
+          respond(socket, mobileNumberObj);
         }, 100);
       }
     } catch (error) {
       console.log(`mobileNumberGenServer.on('message') catched error:`, error);
-      helpers.closeServer(
-        mobileNumberGenServer,
-        () => helpers.killChildProcess(childProcess.pid, process.exit, [1]));
+      helpers.closeServer(mobileNumberGenServer);
     }
   });
 });
 
 mobileNumberGenServer.on('error', (error) => {
   console.log(`mobileNumberGenServer.on('error'): Closing server and killing child processes.`, error);
-  helpers.closeServer(
-    mobileNumberGenServer,
-    () => helpers.killChildProcess(childProcess.pid, process.exit, [1]));
+  helpers.closeServer(mobileNumberGenServer);
 });

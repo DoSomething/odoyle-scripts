@@ -3,8 +3,8 @@
  */
 
 export default {
-  getNextMobile: __ENV.getNextMobile,
-  getNextUpdatedMobile: __ENV.getNextUpdatedMobile,
+  getNextTestMobile: __ENV.getNextTestMobile,
+  getNextUsedTestMobile: __ENV.getNextUsedTestMobile,
   wsBaseURI: __ENV.wsBaseURI,
   scenario: __ENV.scenario,
   delay: __ENV.delay,

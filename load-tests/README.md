@@ -22,12 +22,12 @@ The `/vucode/index.js` file is **not** executed in [node](https://nodejs.org/en/
 ### Scenarios
 
 scenario | flow | Description
---- | ---
-`statusCallback` | T->B->C<br>------------- | Sends **3** requests to Blink. One per status change in Twilio (queued, sent, delivered). Blink's worker relays the request with `delivered` status to Conversations `/import-message` route. The rest are skipped.
+--- | --- | ---
+`broadcast` | C.io->B->C<br>------------- | Sends **1** requests to Blink, which relays the request to Twilio and finally, Conversations `/import-message` route.
 `userResponse`* | T->B->C<br>------------- | Sends **1** request to Blink. Blink relays the request to Conversations `/receive-message` route.
 
->  (T) Twilio. (B) Blink. (C) Conversations API.
->  * Use only as a second running script in a separate terminal. After statusCallback. See more in **Getting Started**.
+>  (C.io) Customer.io. (T) Twilio. (B) Blink. (C) Conversations API.
+>  * Assumes that is running parallel to a broadcast scenario (See more in **Getting Started**).
 
 
 ### Install (Mac)
@@ -65,7 +65,7 @@ Option | Description | native
 **-u** | *Virtual Users*. A number specifying the number of VUs to run concurrently. | `T`
 **-I** | *Influx*. Use influxDB to store the measurements in. | `F`
 **-s** | *Scenario*. Which load test scenario to run. | `F`
-**-n** | *Amount of phones*. Number of phones we will be using for this broadcast. Starts at `+15551111110`. Max is `+15552111110`. | `F`
+**-n** | *Amount of phones*. Number of phones we will be using for this broadcast. Starts at `+15551111110`. Max is `+15559111110` (8 Million). | `F`
 **--delay** | *Delay*. Delay the execution of the tests by x amount of seconds on each iteration. Used to add more flexibility when calibrating `rps`. | `F`
 
 > Not all k6 options are supported.

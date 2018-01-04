@@ -4,7 +4,10 @@ const WebSocket = require('ws');
 const spawn = require('child_process').spawn;
 
 module.exports.getMobileNumberGenSocket = function getMobileNumberGenSocket(wsUrl) {
-  return new WebSocket(wsUrl);
+  return new WebSocket(wsUrl, {
+    // https://github.com/websockets/ws#websocket-compression
+    perMessageDeflate: false,
+  });
 }
 
 module.exports.getMobileNumberGenServer = function getMobileNumberGenServer(port) {
@@ -20,7 +23,7 @@ module.exports.killChildProcess = function killChildProcess(pid, cb, cbArgs = []
   }
 }
 
-module.exports.closeServer = function closeServer(server, cb) {
+module.exports.closeServer = function closeServer(server, cb = () => {}) {
   console.log(`closeServer(): Closing server.`);
   return server.close(cb);
 };
@@ -28,8 +31,8 @@ module.exports.closeServer = function closeServer(server, cb) {
 module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
   const envObject = {
     wsBaseURI: config.wsBaseURI,
-    getNextMobile: config.getNextMobile,
-    getNextUpdatedMobile: config.getNextUpdatedMobile,
+    getNextTestMobile: config.getNextTestMobile,
+    getNextUsedTestMobile: config.getNextUsedTestMobile,
     twilioInboundRelayUrl: config.twilioInboundRelayUrl,
     randomDelayMaxSecods: config.randomDelayMaxSecods,
   };

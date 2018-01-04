@@ -3,10 +3,12 @@
  * TODO: Refactor using ES6 generator function
  */
 class MobileNumberGenerator {
-  constructor(prefix, lowBound, upBound) {
-    this.prefix = prefix || '+1555';
-    this.lowBound = lowBound || 1111110;
-    this.upBound = upBound || 9111110;
+  constructor() {
+    this.prefix = '+1555';
+    // 8 Million numbers by default. From +15551111110 to +15559111110 (Inclusive).
+    // TODO: Use a config to set these hardcoded values
+    this.lowBound = 1111110;
+    this.upBound = 9111110;
     this.state = {
       next: this.lowBound,
       count: 0,
@@ -15,9 +17,9 @@ class MobileNumberGenerator {
   }
 
   next() {
-    if (this.state.last === this.upBound) {
+    if (this.state.next > this.upBound) {
       this.state.limitReached = true;
-      return 'MAX_REACHED';
+      return false;
     }
     this.state.count++;
     return `${this.prefix}${this.state.next++}`;
