@@ -52,4 +52,10 @@ module.exports = {
     requiresArg: true,
     string: true,
   },
+  'ng': {
+    alias: 'not-generator',
+    description: 'Don\'t use generator. Use mobile set in env variables for all tests',
+    customOpt: true,
+    type: 'boolean',
+  }
 };

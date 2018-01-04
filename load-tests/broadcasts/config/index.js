@@ -15,5 +15,6 @@ config.getNextTestMobile = 'nextMobile';
 config.getNextUsedTestMobile = 'nexUpdatedMobile';
 config.twilioInboundRelayUrl = process.env.DS_BLINK_SMS_INBOUND_RELAY_URL || 'http://puppet:totallysecret@localhost:5050/api/v1/webhooks/twilio-sms-inbound';
 config.randomDelayMaxSecods = process.env.RANDOM_DELAY_MAX_SECONDS || 60; // 1 min
+config.defaultMobileToTest = process.env.DEFAULT_MOBILE_TO_TEST || '+15551111110';
 
 module.exports = config;

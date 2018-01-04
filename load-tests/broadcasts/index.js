@@ -12,7 +12,6 @@ const command = helpers.getK6CommandString(userInput, config);
 (async () => {
   const k6EnvObject = await helpers.getK6EnvObject(userInput, config);
   const childProcess = helpers.getK6ChildProcess(command, k6EnvObject);
-  console.log(k6EnvObject);
 
   /**
    * Event listeners

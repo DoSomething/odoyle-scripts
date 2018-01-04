@@ -15,8 +15,10 @@ export default {
   delay: __ENV.delay,
   randomDelayMaxSecods: __ENV.randomDelayMaxSecods,
   blinkBroadcastWebhookUrl: __ENV.blinkBroadcastWebhookUrl,
-  blinkBroadcastWebhookBody: __ENV.blinkBroadcastWebhookBody,
+  blinkBroadcastWebhookBody: JSON.parse(__ENV.blinkBroadcastWebhookBody),
   twilioInboundRelayUrl: __ENV.twilioInboundRelayUrl,
+  useMobileGenerator: __ENV.useMobileGenerator,
+  defaultMobileToTest: __ENV.defaultMobileToTest,
   userResponseRequestMock: {
     // We won't use them to avoid confusion. They're included for legacy support according to Twilio
     // SmsSid: 'SMxx',

@@ -44,27 +44,29 @@ export default function() {
 
     let mobileNumberObj;
 
-    /**
-     * Gets the next number available to test
-     * TODO: DRY
-     * @see https://k6.readme.io/docs/k6-websocket-api
-     */
-    const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-      socket.on('open', function open() {
-        socket.on('message', function (mobileObj) {
-          mobileNumberObj = JSON.parse(mobileObj);
-          socket.close();
+    if (config.useMobileGenerator === 'true') {
+      /**
+       * Gets the next number available to test
+       * TODO: DRY
+       * @see https://k6.readme.io/docs/k6-websocket-api
+       */
+      const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
+        socket.on('open', function open() {
+          socket.on('message', function (mobileObj) {
+            mobileNumberObj = JSON.parse(mobileObj);
+            socket.close();
+          });
+          socket.send(config.getNextTestMobile);
         });
-        socket.send(config.getNextTestMobile);
       });
-    });
 
-    if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
+      if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
+    }
 
     group('Test broadcast to Blink', () => {
       Dispatcher.execute(loadTests.broadcast({
         url: config.blinkBroadcastWebhookUrl,
-        mobile: mobileNumberObj.mobile,
+        mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
       }));
     });
 
@@ -78,28 +80,31 @@ export default function() {
     let mobileNumberObj;
     let drained = false;
 
-    /**
-     * Gets the next updated number available to test
-     * TODO: DRY
-     * @see https://k6.readme.io/docs/k6-websocket-api
-     */
-    const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-      socket.on('open', function open() {
-        socket.on('message', function (mobileObj) {
-          mobileNumberObj = JSON.parse(mobileObj);
-          drained = mobileNumberObj.drained;
-          socket.close();
-        });
-        socket.send(config.getNextUsedTestMobile);
-      });
-    });
+    if (config.useMobileGenerator === 'true') {
 
-    if (drained) failTest(`Error: Mobile number generator drained.`);
+      /**
+       * Gets the next updated number available to test
+       * TODO: DRY
+       * @see https://k6.readme.io/docs/k6-websocket-api
+       */
+      const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
+        socket.on('open', function open() {
+          socket.on('message', function (mobileObj) {
+            mobileNumberObj = JSON.parse(mobileObj);
+            drained = mobileNumberObj.drained;
+            socket.close();
+          });
+          socket.send(config.getNextUsedTestMobile);
+        });
+      });
+
+      if (drained) failTest(`Error: Mobile number generator drained.`);
+    }
 
     group('Test user responses to Blink', () => {
       Dispatcher.execute(loadTests.userResponse({
         url: config.twilioInboundRelayUrl,
-        mobile: mobileNumberObj.mobile,
+        mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
         text: Math.floor(Math.random() * 2) ? 'Y' : 'N',
       }));
     });

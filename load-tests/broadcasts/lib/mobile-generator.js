@@ -1,12 +1,12 @@
 /**
  * MobileNumberGenerator - A poor man's mobile number generator implementation.
  * TODO: Refactor using ES6 generator function
+ * TODO: Use a config to set these hardcoded values
  */
 class MobileNumberGenerator {
   constructor() {
     this.prefix = '+1555';
     // 8 Million numbers by default. From +15551111110 to +15559111110 (Inclusive).
-    // TODO: Use a config to set these hardcoded values
     this.lowBound = 1111110;
     this.upBound = 9111110;
     this.state = {

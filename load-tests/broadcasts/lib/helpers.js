@@ -46,7 +46,8 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
     'getNextTestMobile',
     'getNextUsedTestMobile',
     'twilioInboundRelayUrl',
-    'randomDelayMaxSecods'
+    'randomDelayMaxSecods',
+    'defaultMobileToTest'
   ]);
 
   // Get the broadcast's webhook URL from the broadcast's settings response
@@ -59,7 +60,7 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
   }
 
   envObject.blinkBroadcastWebhookUrl = data.webhook.url;
-  envObject.blinkBroadcastWebhookBody = data.webhook.body;
+  envObject.blinkBroadcastWebhookBody = JSON.stringify(data.webhook.body);
 
   // Custom inputs parsing --------
   if (inputs.delay) {
@@ -70,6 +71,10 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
   if (inputs.scenario) {
     envObject.scenario = inputs.scenario;
   }
+
+  // Use mobile number generator (boolean)
+  envObject.useMobileGenerator = !inputs['not-generator'];
+
   // End custom inputs parsing --------/
 
   return envObject;

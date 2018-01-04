@@ -67,6 +67,7 @@ Option | Description | native
 **-s** | *Scenario*. Which load test scenario to run. | `F`
 **-n** | *Amount of phones*. Number of phones we will be using for this broadcast. Starts at `+15551111110`. Max is `+15559111110` (8 Million). | `F`
 **--delay** | *Delay*. Delay the execution of the tests by x amount of seconds on each iteration. Used to add more flexibility when calibrating `rps`. | `F`
+**--ng** | *Not Generator*. Don't use the mobile number generator. Use the env variable set mobile number for all tests | 'F'
 
 > Not all k6 options are supported.
 
