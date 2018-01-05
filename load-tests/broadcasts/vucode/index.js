@@ -17,8 +17,8 @@ function getDelay() {
     if (config.delay === 'random') {
 
       /**
-       * The 2.5 constant is there to prevent the userResponse script from starting faster than the statusCallback,
-       * I want both scripts to be completely independent of each other in the future, but it's OK for this MVP.
+       * The 2.5 constant is there to prevent the userResponse script from starting faster than other scripts,
+       * Ideally both scripts should be completely independent of each other in the future, but it's OK for this MVP.
        */
       delay = Math.floor(Math.random() * parseFloat(config.randomDelayMaxSecods) + 2.5);
     } else {
@@ -37,35 +37,36 @@ export default function() {
 
   const delay = getDelay();
 
-  if (config.scenario === 'statusCallback') {
-
+  if (config.scenario === 'broadcast') {
     if (delay) {
       sleep(delay);
     }
 
     let mobileNumberObj;
 
-    /**
-     * Gets the next number available to test
-     * TODO: DRY
-     * @see https://k6.readme.io/docs/k6-websocket-api
-     */
-    const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-      socket.on('open', function open() {
-        socket.on('message', function (mobileObj) {
-          mobileNumberObj = JSON.parse(mobileObj);
-          socket.close();
+    if (config.useMobileGenerator === 'true') {
+      /**
+       * Gets the next number available to test
+       * TODO: DRY
+       * @see https://k6.readme.io/docs/k6-websocket-api
+       */
+      const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
+        socket.on('open', function open() {
+          socket.on('message', function (mobileObj) {
+            mobileNumberObj = JSON.parse(mobileObj);
+            socket.close();
+          });
+          socket.send(config.getNextTestMobile);
         });
-        socket.send(config.getNextMobile);
       });
-    });
 
-    if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
+      if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
+    }
 
-    group('Test statusCallbacks to Blink', () => {
-      Dispatcher.execute(loadTests.statusCallback({
-        url: config.statusCallbackUrl,
-        mobile: mobileNumberObj.mobile,
+    group('Test broadcast to Blink', () => {
+      Dispatcher.execute(loadTests.broadcast({
+        url: config.blinkBroadcastWebhookUrl,
+        mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
       }));
     });
 
@@ -79,28 +80,31 @@ export default function() {
     let mobileNumberObj;
     let drained = false;
 
-    /**
-     * Gets the next updated number available to test
-     * TODO: DRY
-     * @see https://k6.readme.io/docs/k6-websocket-api
-     */
-    const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-      socket.on('open', function open() {
-        socket.on('message', function (mobileObj) {
-          mobileNumberObj = JSON.parse(mobileObj);
-          drained = mobileNumberObj.drained;
-          socket.close();
-        });
-        socket.send(config.getNextUpdatedMobile);
-      });
-    });
+    if (config.useMobileGenerator === 'true') {
 
-    if (drained) failTest(`Error: Mobile number generator drained.`);
+      /**
+       * Gets the next updated number available to test
+       * TODO: DRY
+       * @see https://k6.readme.io/docs/k6-websocket-api
+       */
+      const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
+        socket.on('open', function open() {
+          socket.on('message', function (mobileObj) {
+            mobileNumberObj = JSON.parse(mobileObj);
+            drained = mobileNumberObj.drained;
+            socket.close();
+          });
+          socket.send(config.getNextUsedTestMobile);
+        });
+      });
+
+      if (drained) failTest(`Error: Mobile number generator drained.`);
+    }
 
     group('Test user responses to Blink', () => {
       Dispatcher.execute(loadTests.userResponse({
         url: config.twilioInboundRelayUrl,
-        mobile: mobileNumberObj.mobile,
+        mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
         text: Math.floor(Math.random() * 2) ? 'Y' : 'N',
       }));
     });

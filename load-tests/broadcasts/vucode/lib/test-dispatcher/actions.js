@@ -1,7 +1,7 @@
 import requestHelper from '../helpers/request.js';
 
-module.exports.statusCallback = function statusCallback(args) {
-  return requestHelper.postStatusCallbackMock(args.url, args.mobile);
+module.exports.broadcast = function broadcast(args) {
+  return requestHelper.postBroadcastBody(args.url, args.mobile);
 };
 
 module.exports.userResponse = function userResponse(args) {

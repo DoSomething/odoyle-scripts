@@ -35,14 +35,14 @@ function userResponseTest(fn) {
 }
 
 /**
- * statusCallback loadTest
+ * broadcast loadTest
  *
  * @param  {object} args
  * @return {Command}
  */
-module.exports.statusCallback = function statusCallback(args) {
+module.exports.broadcast = function broadcast(args) {
   return new Command(
-    genericTest(actions.statusCallback),
+    genericTest(actions.broadcast),
     [args]);
 };
 

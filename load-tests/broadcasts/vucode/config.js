@@ -1,28 +1,24 @@
 /**
  * @see https://docs.k6.io/v1.0/docs/environment-variables
  */
-
 export default {
-  getNextMobile: __ENV.getNextMobile,
-  getNextUpdatedMobile: __ENV.getNextUpdatedMobile,
+
+  /**
+   * __ENV exposes the passed env variables from the parent process.
+   * If we want to use them in the JS scope of the app, we need to extract into this
+   * config object.
+   */
+  getNextTestMobile: __ENV.getNextTestMobile,
+  getNextUsedTestMobile: __ENV.getNextUsedTestMobile,
   wsBaseURI: __ENV.wsBaseURI,
   scenario: __ENV.scenario,
   delay: __ENV.delay,
   randomDelayMaxSecods: __ENV.randomDelayMaxSecods,
-  statusCallbackUrl: __ENV.statusCallbackUrl,
+  blinkBroadcastWebhookUrl: __ENV.blinkBroadcastWebhookUrl,
+  blinkBroadcastWebhookBody: JSON.parse(__ENV.blinkBroadcastWebhookBody),
   twilioInboundRelayUrl: __ENV.twilioInboundRelayUrl,
-  statusCallbackRequestMock: {
-    // We won't use them to avoid confusion. They're included for legacy support according to Twilio
-    // SmsSid: 'SMxxx',
-    // SmsStatus: 'sent',
-    MessageStatus: 'sent',
-    To: '+15555555555',
-    MessagingServiceSid: 'MGxx',
-    MessageSid: 'SM2xx',
-    AccountSid: 'ACxx',
-    From: '+15005550006',
-    ApiVersion: '2010-04-01'
-  },
+  useMobileGenerator: __ENV.useMobileGenerator,
+  defaultMobileToTest: __ENV.defaultMobileToTest,
   userResponseRequestMock: {
     // We won't use them to avoid confusion. They're included for legacy support according to Twilio
     // SmsSid: 'SMxx',
