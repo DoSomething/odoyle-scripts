@@ -2,7 +2,11 @@ const validations = {
   above0: (val, input) => {
     if (val < 1) throw new Error(`${input} value must be above 0`);
     return val;
-  }
+  },
+  under100: (val, input) => {
+    if (val > 100) throw new Error(`${input} value must be under 100`);
+    return val;
+  },
 }
 
 /**
@@ -57,5 +61,25 @@ module.exports = {
     description: 'Don\'t use generator. Use mobile set in env variables for all tests',
     customOpt: true,
     type: 'boolean',
+  },
+  'rfp': {
+    alias: 'request-failure-percent',
+    nargs: 1,
+    description: 'Percentage of requests that will fail in this test',
+    customOpt: true,
+    number: true,
+    coerce: (val) => {
+      return validations.under100(validations.above0(val, '--rfp'), '--rfp');
+    }
+  },
+  'rfc': {
+    alias: 'request-failure-count',
+    nargs: 1,
+    description: 'Times that this request will be retried.',
+    customOpt: true,
+    number: true,
+    coerce: (val) => {
+      return validations.under100(validations.above0(val, '--rfc'), '--rfc');
+    }
   }
 };

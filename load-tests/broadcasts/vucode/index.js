@@ -7,10 +7,22 @@ import requestHelper from './lib/helpers/request.js';
 import Dispatcher from './lib/test-dispatcher/dispatcher.js';
 import loadTests from './lib/test-dispatcher/tests.js';
 
+
+/**
+ * failTest
+ *
+ * @param  {string} msg
+ */
 function failTest(msg) {
   fail(msg);
 }
 
+
+/**
+ * getDelay
+ *
+ * @return {float|integer}  delay
+ */
 function getDelay() {
   let delay = 0;
   if (config.delay) {
@@ -26,6 +38,29 @@ function getDelay() {
     }
   }
   return delay;
+}
+
+function shouldItFail() {
+  const percent = parseInt(config.requestFailurePercent);
+  /**
+   * This is an probabilistic approximation to the percentage rate we are looking for.
+   * It's not guaranteed, nor accurate for any other purpose than plausible approximation.
+   *
+   * If we wanted a 25% failure rate, we calculate it this way:
+   *  - Calculate in how many pieces we have to cut the pie (100%) in order for one of the pieces
+   *    to be the percentage we want. 100/25 = 4 (4 pieces - one piece represents 25%).
+   *  - Now we get a random number from 0-1 and multiply by the pieces. (Math.random())
+   *  - This leaves us with a number from 0.x to 3.x
+   *    (still a 4 piece pie, its just 0 based, like array indexes)
+   *  - We don't need the decimals so we just strip them off (Math.floor())
+   *  - If the result is 0, then it's the 1/4th piece of the pie, which means is the 25th percentile result. - Profit.
+   */
+  return percent ? Math.floor(Math.random() * (100/percent)) === 0 : false;
+}
+
+function getFailureCount() {
+  const count = parseInt(config.requestFailureCount);
+  return count || 1;
 }
 
 /**
@@ -67,6 +102,18 @@ export default function() {
       Dispatcher.execute(loadTests.broadcast({
         url: config.blinkBroadcastWebhookUrl,
         mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
+        /**
+         * failure and
+         * failureCount - Are implementation dependent.
+         *                They only mean something if the application
+         *                Blink relays this message to, uses these headers to allow a failure
+         *                injection to produce errors. Blink will send both headers:
+         *                `x-request-failure` and `x-request-failure-count` - (subject to change), to
+         *                the application receiving this request. In this case: Gambit Conversations.
+         */
+        // If equal to 0, then this request is a failure
+        failure: shouldItFail(),
+        failureCount: getFailureCount()
       }));
     });
 
