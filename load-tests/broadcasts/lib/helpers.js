@@ -40,7 +40,6 @@ module.exports.closeServer = function closeServer(server, cb = () => {}) {
  * @return {object}        K6 specific env variables.
  */
 module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
-  console.log(inputs);
 
   const envObject = underscore.pick(config, [
     'wsBaseURI',
