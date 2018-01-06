@@ -67,9 +67,9 @@ Option | Description | native
 **-s** | *Scenario*. Which load test scenario to run. | `F`
 **-n** | *Amount of phones*. Number of phones we will be using for this broadcast. Starts at `+15551111110`. Max is `+15559111110` (8 Million). | `F`
 **--delay** | *Delay*. Delay the execution of the tests by x amount of seconds on each iteration. Used to add more flexibility when calibrating `rps`. | `F`
-**--ng** | *Not Generator*. Don't use the mobile number generator. Use the env variable set mobile number for all tests | 'F'
-**--rfp** | *Request Failure Percentage*. Percentage of all requests that will include the `requestFail=true` and `requestFailCount=<amount>` query parameters when posting to the broadcast webhook url. | 'F'
-**--rfc** | *Request Failure Count*. Max amount of times the failure injection should be retried (in the request's final destination) | 'F'
+**--ng** | *Not Generator*. Don't use the mobile number generator. Use the env variable set mobile number for all tests | `F`
+**--rfp** | *Request Failure Percentage*. Percentage of all requests that will include the `requestFail=true` and `requestFailCount=<see --rfc>` query parameters when posting to the broadcast webhook url. | `F`
+**--rfc** | *Request Failure Count*. Max amount of times the failure injection should be retried (in the request's final destination) | `F`
 
 > Not all k6 options are supported.
 > --rfp and --rfc are implementation dependent at the final destination app. If logic is not implemented to consume headers set in Blink: `x-request-fail` and `x-request-fail-count`, then this options really will not mean anything to that app.
