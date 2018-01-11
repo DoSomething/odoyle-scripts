@@ -1,0 +1,20 @@
+{
+  "name": "filter-messages-from-queue",
+  "version": "0.0.1",
+  "description": "Script to connect to a queue and filter out messages, requeuing only the desired messages.",
+  "main": "index.js",
+  "engines": {
+    "node": "6.11.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rafael Pacas <rpacas@dosomething.org> (https://github.com/rapala61)",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "dotenv": "^4.0.0",
+    "moment": "^2.20.1",
+    "tortoise": "^1.0.1"
+  }
+}
