@@ -29,6 +29,9 @@ const passedQueue = rabbitMq
 // Consume
 Promise.all([failedQueue, passedQueue])
   .then(() => {
+
+    if (config.meta.dryRun) return console.log('No Errors. Should be safe to run.');
+
     // Subscribe to container queue
     rabbitMq
       .queue(config.queues.container.name, config.queues.container.options)
