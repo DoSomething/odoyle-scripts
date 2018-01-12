@@ -18,14 +18,17 @@ const rabbitMq = new Tortoise(
  */
 
 rabbitMq.on(Tortoise.EVENTS.CONNECTIONCLOSED, () => {
+  console.log(`${Tortoise.EVENTS.CONNECTIONCLOSED} detected.`);
   process.exit(Tortoise.EVENTS.CONNECTIONCLOSED);
 });
 
 rabbitMq.on(Tortoise.EVENTS.CONNECTIONDISCONNECTED, () => {
+  console.log(`${Tortoise.EVENTS.CONNECTIONDISCONNECTED} detected.`);
   process.exit(Tortoise.EVENTS.CONNECTIONDISCONNECTED);
 });
 
 rabbitMq.on(Tortoise.EVENTS.PARSEERROR, () => {
+  console.log(`${Tortoise.EVENTS.PARSEERROR} detected.`);
   process.exit(Tortoise.EVENTS.PARSEERROR);
 });
 

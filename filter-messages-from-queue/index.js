@@ -1,80 +1,53 @@
 require('dotenv').config();
 
-const moment = require('moment');
 const util = require('util');
 const Promise = require('bluebird');
+const yargs = require('yargs');
 
 const config = require('./config');
+const helpers = require('./lib/helpers');
+
 const rabbitMq = config.rabbitMq;
+const userInput = yargs.options(config.cliOptions).argv;
+const filter = helpers.getFilter(userInput.filter);
 
-// Pass messages after this date
-// TODO: Decouple and create filters instead
-const date = config.filter.date;
+helpers.warn(main);
 
-const count = {
-  failed: 0,
-  passed: 0
-}
+// Throw is filter is not a function.
+if (typeof filter !== 'function') throw new Error('filter must be a function.');
 
-// Setup failed filter queue
-const failedQueue = rabbitMq
-  .queue(config.queues.failed.name, config.queues.failed.options)
-  .setup();
+/**
+ * main - entry point to run the filter
+ */
+function main() {
+  // Setup failed filter queue
+  const failedQueue = rabbitMq
+    .queue(config.queues.failed.name, config.queues.failed.options)
+    .setup();
 
-// Setup passed filter queue
-const passedQueue = rabbitMq
-  .queue(config.queues.passed.name, config.queues.passed.options)
-  .setup();
+  // Setup passed filter queue
+  const passedQueue = rabbitMq
+    .queue(config.queues.passed.name, config.queues.passed.options)
+    .setup();
 
-// Consume
-Promise.all([failedQueue, passedQueue])
-  .then(() => {
+  // Consume
+  Promise.all([failedQueue, passedQueue])
+    .then(() => {
 
-    if (config.meta.dryRun) return console.log('No Errors. Should be safe to run.');
+      if (config.meta.dryRun) {
+        console.log('DRY_RUN detected.');
+        console.log('No Errors creating the failed and success queues.');
+        console.log('Should be safe to run. If you know what you are doing.');
+        process.exit(0);
+      }
 
-    // Subscribe to container queue
-    rabbitMq
-      .queue(config.queues.container.name, config.queues.container.options)
-      .prefetch(config.meta.prefetch)
-      .subscribe(filterMessages);
-  })
-  .catch((err) =>{
-    console.log(err);
-  });
-
-// filters messages
-// TODO: Decouple and create filters instead
-function filterMessages(msg, ack, nack) {
-  let parsedMsg = undefined;
-
-  try {
-    parsedMsg = JSON.parse(msg);
-  } catch (e) {
-    nack(false);
-  }
-
-  if (parsedMsg) {
-    if (moment.unix(parsedMsg.activity_timestamp).isSameOrAfter(moment(date))) {
+      // Subscribe to container queue
       rabbitMq
-        .queue(config.queues.passed.name, config.queues.passed.options)
-        .publish(parsedMsg)
-        .then(() => {
-          ++count.passed;
-          ack();
-          console.log(`passed:${count.passed}`);
-        })
-        .catch(nack)
-    }else {
-      rabbitMq
-        .queue(config.queues.failed.name, config.queues.failed.options)
-        .publish(parsedMsg)
-        .then(() => {
-          ++count.failed;
-          ack();
-          console.log(`failed:${count.failed}`);
-        })
-        .catch(nack)
-    }
-  }
-
+        .queue(config.queues.container.name, config.queues.container.options)
+        .prefetch(config.meta.prefetch)
+        .subscribe(filter(config));
+    })
+    .catch((err) =>{
+      console.log(err);
+    });
 }

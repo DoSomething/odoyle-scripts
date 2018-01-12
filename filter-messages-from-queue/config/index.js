@@ -1,9 +1,11 @@
 const connection = require('./connection');
+const cliOptions = require('./cli-options');
 
 const queueName = process.env.RABBITMQ_QUEUE_NAME || 'test';
 
 module.exports = {
   rabbitMq: connection.rabbitMq,
+  cliOptions,
   queues: {
     container: {
       name: queueName,

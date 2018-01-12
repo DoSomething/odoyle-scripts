@@ -15,6 +15,7 @@
     "bluebird": "^3.5.1",
     "dotenv": "^4.0.0",
     "moment": "^2.20.1",
-    "tortoise": "^1.0.1"
+    "tortoise": "^1.0.1",
+    "yargs": "^10.1.1"
   }
 }
