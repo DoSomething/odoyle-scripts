@@ -47,6 +47,7 @@ The **niche-import-same-or-after-date** filter assumes messaged being filtered f
 ### Usage
 - Clone this repo to your local dev environment.
 - Create your `.env` file and populate accordingly based on the included `.env.example`.
+
 variable | notes
 |---|---|
 `RABBITMQ_CONNECTION_URL=`|should be set to your local RabbitMQ instance [URI](https://www.rabbitmq.com/uri-spec.html)
