@@ -10,11 +10,12 @@ This script is meant to filter messages inside a queue inside a RabbitMQ instanc
 - RabbitMQ (if connecting to local instance)
 
 ### Available Filters
-- niche-import-more-than-or-equal-date
+- niche-import-same-or-after-date
     - It assumes the messages stored in the queue are JSON objects. **Any messages that are not JSON parseable are rejected and not re-queued**
+    - This filter checks for messages with the property `activity_timestamp` that has a timestamp with a date being same or after the one set in `FILTER_DATE`.
 
 ### Message schemas.
-The **niche-import-more-than-or-equal-date** filter assumes messaged being filtered follow this schema.
+The **niche-import-same-or-after-date** filter assumes messaged being filtered follow this schema.
 ```
 {
   "first_name": "maynard",
@@ -46,17 +47,20 @@ The **niche-import-more-than-or-equal-date** filter assumes messaged being filte
 ### Usage
 - Clone this repo to your local dev environment.
 - Create your `.env` file and populate accordingly based on the included `.env.example`.
-	- variable | notes
-	- |---|---|
-	- `RABBITMQ_CONNECTION_URL=`|should be set to your local RabbitMQ instance [URI](https://www.rabbitmq.com/uri-spec.html)
-	- a)`RABBITMQ_QUEUE_NAME=`<br> b)`RABBITMQ_DURABLE_QUEUE=`| a) This is the **container** queue. The name of the queue holding the messages. <br> b) If the **container** queue is a Durable queue
-	- `DRY_RUN=` | when set to `true`, it connects to the RabbitMQ instance and asserts the **failed-filter** and **passed-filter** queues. It DOES NOT assert or subscribe to the **container** queue. <br>When set to `false` it also asserts and subscribes to the **container** queue. Executing the filter.
+variable | notes
+|---|---|
+`RABBITMQ_CONNECTION_URL=`|should be set to your local RabbitMQ instance [URI](https://www.rabbitmq.com/uri-spec.html)
+a)`RABBITMQ_QUEUE_NAME=`<br> b)`RABBITMQ_DURABLE_QUEUE=`| a) This is the **container** queue. The name of the queue holding the messages. <br> b) If the **container** queue is a Durable queue
+`DRY_RUN=` | when set to `true`, it connects to the RabbitMQ instance and asserts the **failed-filter** and **passed-filter** queues. It DOES NOT assert or subscribe to the **container** queue. <br>When set to `false` it also asserts and subscribes to the **container** queue. Executing the filter.
+`FILTER_DATE=` | date that the niche-import-same-or-after-date filter uses to filter messages.
 
 ##### Examples
-Using `RABBITMQ_QUEUE_NAME=test`.
+- Using `RABBITMQ_QUEUE_NAME=test`
+- Having 5 messages in the **container** queue
+
 
 Command
-- `node index.js -f niche-import-more-than-or-equal-date`
+- `node index.js -f niche-import-same-or-after-date`
 
 Result
 - `<passed|failed>:<count>`
@@ -68,7 +72,9 @@ Result
 		passed:4
 		failed:1
 		```
-- 4 messages in the **test-passed-filter** & 1message in the **test-failed-filter**
+- There should be 0 messages in the `test` **container** queue.
+- 4 messages in the **test-passed-filter** queue
+- 1 message in the **test-failed-filter** queue
 
 ### TODO
 - Refactor config files in the script.

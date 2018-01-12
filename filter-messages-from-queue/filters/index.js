@@ -10,7 +10,7 @@ module.exports = {
    * The messages that fail the filter are re-published to the
    * "<RABBITMQ_QUEUE_NAME>-failed-filter" queue.
    */
-  nicheImportMoreThanOrEqualDate: (config) => {
+  nicheImportSameOrAfterDate: (config) => {
     const count = {
       failed: 0,
       passed: 0
