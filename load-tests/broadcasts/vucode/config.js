@@ -18,6 +18,8 @@ export default {
   blinkBroadcastWebhookBody: JSON.parse(__ENV.blinkBroadcastWebhookBody),
   twilioInboundRelayUrl: __ENV.twilioInboundRelayUrl,
   useMobileGenerator: __ENV.useMobileGenerator,
+  requestFailurePercent: __ENV.requestFailurePercent,
+  requestFailureCount: __ENV.requestFailureCount,
   defaultMobileToTest: __ENV.defaultMobileToTest,
   userResponseRequestMock: {
     // We won't use them to avoid confusion. They're included for legacy support according to Twilio

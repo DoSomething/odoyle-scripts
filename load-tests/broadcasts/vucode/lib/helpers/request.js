@@ -38,8 +38,16 @@ function postUserResponseMock(url, mobile, text) {
  * Broadcast
  */
 
-function postBroadcastBody(url, mobile) {
-  return post(url, getBroadcastBodyMock(mobile));
+function postBroadcastBody(url, mobile, failure, failureCount) {
+  let finalUrl = url;
+  if (failure) {
+    finalUrl = `${finalUrl}?requestFail=true`;
+
+    if (failureCount) {
+      finalUrl = `${finalUrl}&requestFailCount=${failureCount}`;
+    }
+  }
+  return post(finalUrl, getBroadcastBodyMock(mobile));
 }
 
 function getBroadcastBodyMock(mobile) {

@@ -72,6 +72,15 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
     envObject.scenario = inputs.scenario;
   }
 
+  // Used in k6 to calculate request failure percentage
+  if (inputs['request-failure-percent']) {
+    envObject.requestFailurePercent = inputs['request-failure-percent'];
+  }
+
+  if (inputs['request-failure-count']) {
+    envObject.requestFailureCount = inputs['request-failure-count'];
+  }
+
   // Use mobile number generator (boolean)
   envObject.useMobileGenerator = !inputs['not-generator'];
 
