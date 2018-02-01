@@ -22,8 +22,8 @@ module.exports = {
     coerce: (val) => validations.above0(val, '-u')
   },
   'n': {
-    alias: 'amount-of-phones',
-    description: 'A number specifying the amount of phone numbers to try in this broadcast load test. \n Lower bound: +15551111110. \n Upper bound: +15559111110. \n Max of 8 Million.',
+    alias: 'amount-of-requests',
+    description: 'A number specifying the amount of requests to try in this broadcast load test.',
     nargs: 1,
     demandOption: true,
     customOpt: true,
@@ -55,12 +55,6 @@ module.exports = {
     customOpt: true,
     requiresArg: true,
     string: true,
-  },
-  'ng': {
-    alias: 'not-generator',
-    description: 'Don\'t use generator. Use mobile set in env variables for all tests',
-    customOpt: true,
-    type: 'boolean',
   },
   'rfp': {
     alias: 'request-failure-percent',

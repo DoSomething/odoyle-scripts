@@ -9,12 +9,7 @@ const broadcastId = process.env.DS_CONVERSATIONS_BROADCAST_ID || '7zU0Mb1k9GkWWI
 
 config.broadcastSettingsUrl = `${broadcastSettingsBaseUrl}/${broadcastId}`;
 config.dbName = 'broadcastsLoadTesting';
-config.wsServerPort = process.env.MOBILE_NUMBER_GENERATOR_SERVER_PORT || 3200;
-config.wsBaseURI = `ws://localhost:${config.wsServerPort}`;
-config.getNextTestMobile = 'nextMobile';
-config.getNextUsedTestMobile = 'nexUpdatedMobile';
-config.twilioInboundRelayUrl = process.env.DS_BLINK_SMS_INBOUND_RELAY_URL || 'http://puppet:totallysecret@localhost:5050/api/v1/webhooks/twilio-sms-inbound';
 config.randomDelayMaxSecods = process.env.RANDOM_DELAY_MAX_SECONDS || 60; // 1 min
-config.defaultMobileToTest = process.env.DEFAULT_MOBILE_TO_TEST || '+15551111110';
+config.defaultNorthstarId = process.env.DEFAULT_NORTHSTAR_ID || 'puppetTest';
 
 module.exports = config;

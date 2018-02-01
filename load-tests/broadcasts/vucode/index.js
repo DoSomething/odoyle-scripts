@@ -7,6 +7,9 @@ import requestHelper from './lib/helpers/request.js';
 import Dispatcher from './lib/test-dispatcher/dispatcher.js';
 import loadTests from './lib/test-dispatcher/tests.js';
 
+/**
+ * Utility functions -------------------------
+ */
 
 /**
  * failTest
@@ -16,7 +19,6 @@ import loadTests from './lib/test-dispatcher/tests.js';
 function failTest(msg) {
   fail(msg);
 }
-
 
 /**
  * getDelay
@@ -64,6 +66,15 @@ function getFailureCount() {
 }
 
 /**
+ * End Utility functions ------------------------- /
+ */
+
+
+/**
+ * Main -------------------------
+ */
+
+/**
  * vuCode - Entry point for the VU - Virtual User
  * @see https://docs.k6.io/docs/running-k6
  * @return {type}  description
@@ -77,39 +88,15 @@ export default function() {
       sleep(delay);
     }
 
-    let mobileNumberObj;
-
-    if (config.useMobileGenerator === 'true') {
-      /**
-       * Gets the next number available to test
-       * TODO: DRY
-       * @see https://k6.readme.io/docs/k6-websocket-api
-       */
-      const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-        socket.on('open', function open() {
-          socket.on('message', function (mobileObj) {
-            mobileNumberObj = JSON.parse(mobileObj);
-            socket.close();
-          });
-          socket.send(config.getNextTestMobile);
-        });
-      });
-
-      if (mobileNumberObj.limitReached) failTest(`Error: Mobile number generator drained. Maximum number reached.`);
-    }
-
     group('Test broadcast to Blink', () => {
       Dispatcher.execute(loadTests.broadcast({
         url: config.blinkBroadcastWebhookUrl,
-        mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
+        northstarId: config.defaultNorthstarId,
         /**
          * failure and
          * failureCount - Are implementation dependent.
-         *                They only mean something if the application
-         *                Blink relays this message to, uses these headers to allow a failure
-         *                injection to produce errors. Blink will send both headers:
-         *                `x-request-failure` and `x-request-failure-count` - (subject to change), to
-         *                the application receiving this request. In this case: Gambit Conversations.
+         *                They only mean something if the application this test is POSTing to,
+         *                uses these headers to allow a failure injection to produce errors.
          */
         // If equal to 0, then this request is a failure
         failure: shouldItFail(),
@@ -118,45 +105,19 @@ export default function() {
     });
 
   } else if (config.scenario === 'userResponse') {
-
-
-    if (delay) {
-      sleep(delay);
-    }
-
-    let mobileNumberObj;
-    let drained = false;
-
-    if (config.useMobileGenerator === 'true') {
-
-      /**
-       * Gets the next updated number available to test
-       * TODO: DRY
-       * @see https://k6.readme.io/docs/k6-websocket-api
-       */
-      const res = webSocket.connect(config.wsBaseURI, {}, (socket) => {
-        socket.on('open', function open() {
-          socket.on('message', function (mobileObj) {
-            mobileNumberObj = JSON.parse(mobileObj);
-            drained = mobileNumberObj.drained;
-            socket.close();
-          });
-          socket.send(config.getNextUsedTestMobile);
-        });
-      });
-
-      if (drained) failTest(`Error: Mobile number generator drained.`);
-    }
-
-    group('Test user responses to Blink', () => {
-      Dispatcher.execute(loadTests.userResponse({
-        url: config.twilioInboundRelayUrl,
-        mobile: mobileNumberObj ? mobileNumberObj.mobile : config.defaultMobileToTest,
-        text: Math.floor(Math.random() * 2) ? 'Y' : 'N',
-      }));
-    });
-
+    /**
+     * TODO: Implement with V2 broadcast in mind. We are going to need a way to automate a test
+     * userbase that we can use to send a broadcast to. Then, in parallel with a small delay, start
+     * responding back to the imported messages. We were doing this by using a phone number generator.
+     * Since broadcast V2 expects just a northstarId, it's a litt;e tougher to automate without a
+     * list of correct staging northstar ids. Let's figure that out before implementing this test.
+     * @see: https://github.com/DoSomething/gambit-conversations/pull/272
+     */
   } else {
     failTest(`${config.scenario} is not a valid scenario!`);
   }
 }
+
+/**
+ * End Main -------------------------/
+ */
