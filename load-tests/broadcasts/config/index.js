@@ -9,7 +9,6 @@ const broadcastId = process.env.DS_CONVERSATIONS_BROADCAST_ID || '7zU0Mb1k9GkWWI
 
 config.broadcastSettingsUrl = `${broadcastSettingsBaseUrl}/${broadcastId}`;
 config.dbName = 'broadcastsLoadTesting';
-config.randomDelayMaxSecods = process.env.RANDOM_DELAY_MAX_SECONDS || 60; // 1 min
 config.defaultNorthstarId = process.env.DEFAULT_NORTHSTAR_ID || 'puppetTest';
 
 module.exports = config;
