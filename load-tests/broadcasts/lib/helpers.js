@@ -1,20 +1,7 @@
 const path = require('path');
 const axios = require('axios');
-const WebSocket = require('ws');
 const underscore = require('underscore');
 const spawn = require('child_process').spawn;
-
-module.exports.getMobileNumberGenSocket = function getMobileNumberGenSocket(wsUrl) {
-  return new WebSocket(wsUrl, {
-    // https://github.com/websockets/ws#websocket-compression
-    perMessageDeflate: false,
-  });
-}
-
-module.exports.getMobileNumberGenServer = function getMobileNumberGenServer(port) {
-  console.log(`getMobileNumberGenServer(): Getting server.`);
-  return new WebSocket.Server({ port });
-}
 
 module.exports.killChildProcess = function killChildProcess(pid, cb, cbArgs = []) {
   console.log(`killChildProcess(): Killing child process: ${pid}`);
@@ -23,12 +10,6 @@ module.exports.killChildProcess = function killChildProcess(pid, cb, cbArgs = []
     cb.apply(this, cbArgs);
   }
 }
-
-module.exports.closeServer = function closeServer(server, cb = () => {}) {
-  console.log(`closeServer(): Closing server.`);
-  return server.close(cb);
-};
-
 
 /**
  * getK6EnvObject - Pack K6 specific config variables into an object that will be passed on to the
@@ -42,12 +23,8 @@ module.exports.closeServer = function closeServer(server, cb = () => {}) {
 module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
 
   const envObject = underscore.pick(config, [
-    'wsBaseURI',
-    'getNextTestMobile',
-    'getNextUsedTestMobile',
-    'twilioInboundRelayUrl',
     'randomDelayMaxSecods',
-    'defaultMobileToTest'
+    'defaultNorthstarId',
   ]);
 
   // Get the broadcast's webhook URL from the broadcast's settings response
@@ -81,9 +58,6 @@ module.exports.getK6EnvObject = async function getK6EnvObject(inputs, config) {
     envObject.requestFailureCount = inputs['request-failure-count'];
   }
 
-  // Use mobile number generator (boolean)
-  envObject.useMobileGenerator = !inputs['not-generator'];
-
   // End custom inputs parsing --------/
 
   return envObject;
@@ -97,15 +71,21 @@ module.exports.getK6CommandString = function getK6CommandString(inputs, config) 
   const nativeOpts = Object.keys(config.cliOptions).filter((opt) => {
     return !config.cliOptions[opt].customOpt;
   });
-  // Parse native options
+
+  /**
+   * Parse native options
+   * @see: https://docs.k6.io/docs/options
+   */
   nativeOpts.forEach((opt) => {
     if (inputs[opt]) optsString = `${optsString} -${opt} ${inputs[opt]}`;
   });
 
+  // Will run N iterations
   if (inputs.n) {
     optsString = `${optsString} -i ${inputs.n}`;
   }
 
+  // Use influxdb to store metrics on this load test
   if (inputs.influx) {
     optsString = `${optsString} --out influxdb=http://localhost:8086/${config.dbName}`
   }
