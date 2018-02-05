@@ -13,32 +13,10 @@ function post(url, payload, options = {}) {
 }
 
 /**
- * User Response
- */
-
-function checkUserResponseStatusCode(res) {
-  const object = {};
-  object[`sendingUserResponse-${res.status}`] = (res) => res.status === res.status;
-  check(res, object);
-}
-
-function getUserResponseMock(mobile, text = 'N') {
-  const mock = _.extend({}, config.userResponseRequestMock);
-  mock.From = mobile;
-  mock.Body = text;
-  const body = JSON.stringify(mock);
-  return body;
-}
-
-function postUserResponseMock(url, mobile, text) {
-  return post(url, getUserResponseMock(mobile, text));
-}
-
-/**
  * Broadcast
  */
 
-function postBroadcastBody(url, mobile, failure, failureCount) {
+function postBroadcastBody(url, northstarId, failure, failureCount) {
   let finalUrl = url;
   if (failure) {
     finalUrl = `${finalUrl}?requestFail=true`;
@@ -47,12 +25,12 @@ function postBroadcastBody(url, mobile, failure, failureCount) {
       finalUrl = `${finalUrl}&requestFailCount=${failureCount}`;
     }
   }
-  return post(finalUrl, getBroadcastBodyMock(mobile));
+  return post(finalUrl, getBroadcastBodyMock(northstarId));
 }
 
-function getBroadcastBodyMock(mobile) {
+function getBroadcastBodyMock(northstarId) {
   const mock = _.extend({}, config.blinkBroadcastWebhookBody);
-  mock.To = mobile;
+  mock.northstarId = northstarId;
   const body = JSON.stringify(mock);
   return body;
 }
@@ -61,7 +39,4 @@ module.exports = {
   post,
   getBroadcastBodyMock,
   postBroadcastBody,
-  checkUserResponseStatusCode,
-  getUserResponseMock,
-  postUserResponseMock,
 };
