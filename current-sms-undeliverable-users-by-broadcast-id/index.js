@@ -47,7 +47,7 @@ function processUser(user) {
 }
 
 // Write the header
-userIdsFileStream.write('userId,sms_status\n');
+userIdsFileStream.write('user_id,sms_status\n');
 
 // Connect to the DB
 mongoClient.connectToDB().then((db) => {
