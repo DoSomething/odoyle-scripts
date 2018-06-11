@@ -34,33 +34,52 @@ const userIds = new Set();
 let docsFound = 0;
 let currentUndeliverableFound = 0;
 
-function getNorthstarUserById(id) {
-  return northstar.fetchUserById(id);
-}
+// Write the csv header
+userIdsFileStream.write('user_id\n');
 
 function processUser(user) {
   if (user.sms_status === 'undeliverable') {
     currentUndeliverableFound += 1;
-    userIdsFileStream.write(`${user.id},${user.sms_status}\n`);
+    userIdsFileStream.write(`${user.id}\n`);
   }
   logger.info(`${user.id},${user.sms_status}`);
 }
 
-// Write the header
-userIdsFileStream.write('user_id,sms_status\n');
+function addLimit(cursor) {
+  // set results limit
+  if (config.query.limit) {
+    if (config.query.limit <= config.query.MAX_LIMIT) {
+      cursor.limit(config.query.limit);
+    } else {
+      logger.info(`violation of the config.query.MAX_LIMIT. Defaulting to DEFAULT_LIMIT: ${config.query.DEFAULT_LIMIT}`);
+      cursor.limit(config.query.DEFAULT_LIMIT);
+    }
+  } else {
+    cursor.limit(config.query.DEFAULT_LIMIT);
+  }
+}
 
 // Connect to the DB
 mongoClient.connectToDB().then((db) => {
   // Execute the aggregation pipeline stages
-  const cursor = db.collection('messages').aggregate([
-    { $match: { broadcastId: `${broadcastId}`,
-      direction: config.query.direction,
-      'metadata.delivery.failureData.code': {
-        $in: config.query.errorCodes,
+  const cursor = db.collection('messages').aggregate(
+    [
+      {
+        $match: {
+          broadcastId: `${broadcastId}`,
+          direction: config.query.direction,
+          'metadata.delivery.failureData.code': {
+            $in: config.query.errorCodes,
+          },
+          'metadata.delivery.failedAt': { $exists: 1 },
+        },
       },
-      'metadata.delivery.failedAt': { $exists: 1 } } },
-    { $project: { userId: 1 } },
-  ], { cursor: { batchSize: 500 } }).limit(10);
+      { $project: { userId: 1 } },
+    ],
+    { cursor: { batchSize: 500 } },
+  );
+
+  addLimit(cursor);
 
   cursor.forEach((doc) => {
     userIds.add(doc.userId);
@@ -69,7 +88,7 @@ mongoClient.connectToDB().then((db) => {
   cursor.on('close', () => {
     userIds.forEach((id) => {
       docsFound += 1;
-      northstarPromises.push(rateLimiter.add(getNorthstarUserById
+      northstarPromises.push(rateLimiter.add(northstar.fetchUserById
         .bind(this, id)).then(user => processUser(user)));
     });
 
