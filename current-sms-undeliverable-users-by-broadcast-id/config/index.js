@@ -12,7 +12,14 @@ const cliOptions = {
 };
 
 const northstar = {
-  requestsPerSecond: process.env.DS_NORTHSTAR_API_REQUEST_PER_SEC || 1,
+  rateLimit: {
+    get: process.env.DS_NORTHSTAR_API_GET_REQUEST_PER_SEC || 1,
+    update: process.env.DS_NORTHSTAR_API_UPDATE_REQUEST_PER_SEC || 1,
+  },
+  smsStatuses: {
+    active: 'active',
+    undeliverable: 'undeliverable',
+  },
 };
 
 const MAX_LIMIT = 50000;

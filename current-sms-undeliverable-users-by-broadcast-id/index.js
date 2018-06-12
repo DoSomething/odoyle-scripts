@@ -18,31 +18,40 @@ const northstar = require('./lib/northstar');
 // Start profiling processing time
 logger.profile('script');
 
-const rateLimiter = new PromiseThrottle({
-  requestsPerSecond: config.northstar.requestsPerSecond,
+const rateLimitedGetNorthstarUser = new PromiseThrottle({
+  requestsPerSecond: config.northstar.rateLimit.get,
+  promiseImplementation: Promise, // the Promise library you are using
+});
+
+const rateLimitedUpdateNorthstarUser = new PromiseThrottle({
+  requestsPerSecond: config.northstar.rateLimit.update,
   promiseImplementation: Promise, // the Promise library you are using
 });
 
 const userInput = yargs.options(config.cliOptions).argv;
 const broadcastId = userInput.broadcast;
-const userIdsFilePath = `./data/userIds-${broadcastId}.csv`;
-const userIdsFileStream = fs.createWriteStream(userIdsFilePath, { flags: 'w' });
-const northstarPromises = [];
+const userIdsFilePath = `./data/updated-user-ids-${broadcastId}-${Date.now()}.csv`;
+const updatedUserIdsFileStream = fs.createWriteStream(userIdsFilePath, { flags: 'w' });
+const getNorthstarUserPromises = [];
+const updateNorthstarUserPromises = [];
 const userIds = new Set();
 
 // Logging variables
 let docsFound = 0;
 let currentUndeliverableFound = 0;
+let usersUpdated = 0;
 
 // Write the csv header
-userIdsFileStream.write('user_id\n');
+updatedUserIdsFileStream.write('user_id\n');
 
-function processUser(user) {
-  if (user.sms_status === 'undeliverable') {
-    currentUndeliverableFound += 1;
-    userIdsFileStream.write(`${user.id}\n`);
-  }
-  logger.info(`${user.id},${user.sms_status}`);
+function shouldUpdateUser(user) {
+  return user.sms_status === config.northstar.smsStatuses.undeliverable;
+}
+
+function getActiveSmsStatusPayload() {
+  return {
+    sms_status: config.northstar.smsStatuses.active,
+  };
 }
 
 function addLimit(cursor) {
@@ -56,6 +65,22 @@ function addLimit(cursor) {
     }
   } else {
     cursor.limit(config.query.DEFAULT_LIMIT);
+  }
+}
+
+function exit(error) {
+  logger.info(`
+    Found ${docsFound} users.
+    ${currentUndeliverableFound} currently were in an undeliverable status.
+    ${usersUpdated} were updated to ${config.northstar.smsStatuses.active}.`);
+  updatedUserIdsFileStream.end();
+  memoryProfiler.logMemoryUsed();
+  // Stop profiling processing time
+  logger.profile('script');
+
+  if (error) {
+    logger.error(error);
+    process.exit(1);
   }
 }
 
@@ -88,18 +113,34 @@ mongoClient.connectToDB().then((db) => {
   cursor.on('close', () => {
     userIds.forEach((id) => {
       docsFound += 1;
-      northstarPromises.push(rateLimiter.add(northstar.fetchUserById
-        .bind(this, id)).then(user => processUser(user)));
+      // rate limit getting user's sms_status from Northstar
+      getNorthstarUserPromises.push(rateLimitedGetNorthstarUser.add(
+        northstar.fetchUserById.bind(this, id))
+        .then((user) => {
+          logger.info(`Found ${user.id},${user.sms_status}`);
+          // If the user is currently set to undeliverable
+          if (shouldUpdateUser(user)) {
+            currentUndeliverableFound += 1;
+            // rate limit updating user's sms_status in Northstar
+            updateNorthstarUserPromises.push(rateLimitedUpdateNorthstarUser.add(
+              northstar.updateUser.bind(this, user.id, getActiveSmsStatusPayload()))
+              .then((response) => {
+                usersUpdated += 1;
+                logger.info(`Updated ${response.id} to active`);
+                updatedUserIdsFileStream.write(`${user.id}\n`);
+              }));
+          }
+        }));
     });
 
-    Promise.all(northstarPromises)
+    Promise.all(getNorthstarUserPromises)
       .then(() => {
-        logger.info(`Found ${docsFound} users. ${currentUndeliverableFound} currently have an undeliverable status`);
-        memoryProfiler.logMemoryUsed();
-        userIdsFileStream.end();
-        // Stop profiling processing time
-        logger.profile('script');
-      });
+        Promise.all(updateNorthstarUserPromises)
+          .then(() => exit())
+          .catch(error => exit(error));
+      })
+      .catch(error => exit(error));
+
     mongoClient.disconnect();
   });
 });
