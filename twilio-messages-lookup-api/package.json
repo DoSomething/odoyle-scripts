@@ -1,0 +1,29 @@
+{
+  "name": "twilio-messages-lookup-api",
+  "version": "1.0.0",
+  "description": "reads a csv file of twilio messages sids and retrieves their carrier info",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "8.11.1",
+    "npm": "5.7.1"
+  },
+  "keywords": [
+    "twilio",
+    "lookup",
+    "carrier"
+  ],
+  "author": "Rafael Pacas <rpacas@dosomething.org> (https://github.com/rapala61)",
+  "license": "ISC",
+  "dependencies": {
+    "@dosomething/eslint-config": "^4.0.0",
+    "bluebird": "^3.5.1",
+    "csv-streamify": "^4.0.0",
+    "dotenv": "^6.0.0",
+    "promise-throttle": "^1.0.0",
+    "superagent": "^3.8.3",
+    "winston": "^3.0.0"
+  }
+}
