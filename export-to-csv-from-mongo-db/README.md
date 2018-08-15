@@ -5,6 +5,7 @@
 
 # Scripts
 - `sids-by-broadcast-and-error-code` - Retrieves Message Sids of `outbound-api-send` messages during a broadcast and reported by Twilio as not being delivered.
+- `sids-by-broadcast-and-queued` - Retrieves Message Sids of `outbound-api-send` messages during a broadcast and not reported by Twilio as delivered or failed.
 
 ### Usage
 
@@ -12,5 +13,6 @@
 - Run `npm i`
 - Run
 ```
+// Example
 puppet in ~/odscripts/export-to-csv-from-mongo-db $ node index.js -s sids-by-broadcast-and-error-code
 ```
