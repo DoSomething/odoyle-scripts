@@ -8,3 +8,6 @@ npm-debug.log*
 
 #local nvm configuration
 .nvmrc
+
+#OS
+.DS_Store
