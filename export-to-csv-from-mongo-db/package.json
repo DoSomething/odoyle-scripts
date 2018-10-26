@@ -1,0 +1,25 @@
+{
+  "name": "current-sms-undeliverable-users-by-broadcast-id",
+  "version": "1.0.0",
+  "description": "gets data and stores it into a file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "8.11.1",
+    "npm": "5.7.1"
+  },
+  "author": "Rafael Pacas <rpacas@dosomething.org> (https://github.com/rapala61)",
+  "license": "ISC",
+  "dependencies": {
+    "@dosomething/eslint-config": "^4.0.0",
+    "bluebird": "^3.5.1",
+    "dotenv": "^6.0.0",
+    "lodash": "^4.17.10",
+    "mongodb": "^3.0.10",
+    "promise-throttle": "^1.0.0",
+    "winston": "^2.4.2",
+    "yargs": "^11.0.0"
+  }
+}
